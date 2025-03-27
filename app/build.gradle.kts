@@ -67,7 +67,22 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7") // lifecycle compose
+    // splash screen
+    implementation("androidx.core:core-splashscreen:1.0.0") // splash screen
+    // lifecycle compose
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
 
     implementation("com.airbnb.android:lottie-compose:6.6.0")
+    implementation("androidx.navigation:navigation-compose:2.8.9")
+
+    // viewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+
+    implementation("com.google.dagger:dagger-compiler:2.50")
+
+    // hilt
+    implementation("androidx.hilt:hilt-navigation-fragment:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
 }

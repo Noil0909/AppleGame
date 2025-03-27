@@ -1,4 +1,7 @@
 package com.example.applegame.domain.model
 
-class Apple {
-}
+data class Apple(
+    val id: Int,
+    val number: Int,
+    val isSelected: Boolean = false
+)
