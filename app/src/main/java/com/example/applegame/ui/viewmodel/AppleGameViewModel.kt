@@ -3,17 +3,14 @@ package com.example.applegame.ui.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
+import com.example.applegame.ui.utils.DragUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import kotlin.math.max
-import kotlin.math.min
 
 class AppleGameViewModel : ViewModel() {
 
@@ -61,62 +58,50 @@ class AppleGameViewModel : ViewModel() {
     }
 
     // 드래그 영역 업데이트
-    fun updateDragArea(start: Offset?, end: Offset?, cellSizePx: Float) {
-        _dragStart.value = start
-        _dragEnd.value = end
+    fun updateDragArea(
+        start: Offset?,
+        end: Offset?,
+        cellSizePx: Float,
+        gridTopLeft: Offset
+    ) {
+        // 드래그 좌표를 그리드 기준 로컬 좌표로 변환
+        _dragStart.value = start?.minus(gridTopLeft)
+        _dragEnd.value = end?.minus(gridTopLeft)
         _selectedIds.clear()
 
-        if (start != null && end != null) {
-            val (x1, y1) = start
-            val (x2, y2) = end
-            val minX = min(x1, x2)
-            val maxX = max(x1, x2)
-            val minY = min(y1, y2)
-            val maxY = max(y1, y2)
+        val localStart = _dragStart.value
+        val localEnd = _dragEnd.value
 
-            _apples.forEach { apple ->
-                val row = apple.position / 10
-                val col = apple.position % 10
-                val centerX = (col + 0.5f) * cellSizePx
-                val centerY = (row + 0.5f) * cellSizePx
-
-                if (centerX in minX..maxX && centerY in minY..maxY) {
-                    _selectedIds.add(apple.id)
-                }
-            }
-
-            // 합계 10 확인
-            if (_selectedIds.sumOf { id -> _apples.first { it.id == id }.number } == 10) {
-                removeMatchedApples()
-            }
+        if (localStart != null && localEnd != null) {
+            val dragRect = DragUtils.createDragRect(localStart, localEnd)
+            _selectedIds.addAll(
+                DragUtils.calculateSelectedApples(
+                    apples = _apples,
+                    dragRect = dragRect,
+                    cellSizePx = cellSizePx,
+                    gridTopLeft = Offset.Zero // 이제 이미 로컬 좌표로 변환되었음
+                )
+            )
         }
     }
 
-
-    fun toggleApple(id: Int) {
-        if (_selectedIds.contains(id)) {
-            _selectedIds.remove(id)
-        } else {
-            _selectedIds.add(id)
-            if (checkSum()) removeMatchedApples()
+    // 드래그 종료 시 선택 확인
+    fun confirmSelection() {
+        if (_selectedIds.sumOf { id ->
+                _apples.first { it.id == id }.number
+            } == 10) {
+            removeMatchedApples()
         }
-    }
-
-    private fun checkSum(): Boolean {
-        return _selectedIds.sumOf { id ->
-            _apples.first { it.id == id }.number
-        } == 10
+        _selectedIds.clear() // 선택 해제
+        _dragStart.value = null
+        _dragEnd.value = null
     }
 
     private fun removeMatchedApples() {
-        _selectedIds.forEach { id ->
-            val index = _apples.indexOfFirst { it.id == id }
-            if (index != -1) {
-                _apples[index] = _apples[index].copy(number = 0)
-            }
+        _apples.replaceAll { apple ->
+            if (apple.id in _selectedIds) apple.copy(number = 0) else apple
         }
         _score.value += _selectedIds.size * 100
-        _selectedIds.clear()
     }
 
     // === 타이머 로직 ===
@@ -132,9 +117,9 @@ class AppleGameViewModel : ViewModel() {
         }
     }
 
-    // === 게임 제어 ===
+    // === 게임 재시작 ===
     fun restartGame() {
-        _remainingTime.value = 60
+        _remainingTime.value = 120
         _appleGameState.value = AppleGameState.Playing
         resetGame()
         startTimer()
