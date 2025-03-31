@@ -1,11 +1,15 @@
 package com.example.applegame.ui.component
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -16,10 +20,16 @@ import com.example.applegame.ui.viewmodel.AppleGameViewModel
 
 @Composable
 fun TimeProgressBar(viewModel: AppleGameViewModel) {
-    val progress = viewModel.remainingTime / 120f // 120초 기준
+    // targetProgress는 남은 시간을 0~1 사이의 값으로 변환
+    val targetProgress = viewModel.remainingTime / 120f
+
+    val animatedProgress by animateFloatAsState(
+        targetValue = targetProgress,
+        animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
+    )
 
     LinearProgressIndicator(
-        progress = progress,
+        progress = animatedProgress,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
