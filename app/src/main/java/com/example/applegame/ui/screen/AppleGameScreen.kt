@@ -88,6 +88,8 @@ fun AppleGameScreen(
             // 시간제한
             TimeProgressBar(viewModel = viewModel)
 
+            Spacer(modifier = Modifier.height(30.dp))
+
             // 사과 그리드
             Box(
                 modifier = Modifier

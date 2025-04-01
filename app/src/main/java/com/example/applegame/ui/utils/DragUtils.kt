@@ -21,9 +21,6 @@ object DragUtils {
         cellSizePx: Float,
         gridTopLeft: Offset
     ): List<Int> {
-        // 사과 바운딩 박스를 약간 확장하여 (예: 10% 여유) 드래그 범위를 늘림
-        val extraMargin = cellSizePx * 0.1f
-
         return apples.filter { apple ->
             val row = apple.position / 10
             val col = apple.position % 10
@@ -33,8 +30,8 @@ object DragUtils {
             val appleTop = row * cellSizePx
 
             val appleRect = Rect(
-                offset = Offset(appleLeft - extraMargin, appleTop - extraMargin),
-                size = Size(cellSizePx + extraMargin * 2, cellSizePx + extraMargin * 2)
+                offset = Offset(appleLeft, appleTop),
+                size = Size(cellSizePx, cellSizePx)
             )
 
             // 드래그 사각형과 사과 영역이 겹치면 선택 처리

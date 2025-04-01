@@ -59,7 +59,7 @@ fun AppleItem(
     Box(
         modifier = Modifier
             .size(cellSize)
-            .padding(4.dp)
+            .padding(2.dp)
     ) {
         Image(
             painter = painterResource(R.drawable.apple2_icon),
