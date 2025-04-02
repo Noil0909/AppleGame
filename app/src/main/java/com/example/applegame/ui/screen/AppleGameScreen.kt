@@ -78,7 +78,7 @@ fun AppleGameScreen(
 
         Column(
             modifier = Modifier
-                .padding(top = 30.dp)
+                .padding(top = 30.dp, bottom = 30.dp)
                 .fillMaxSize()
                 .background(Color.White)
         ) {
@@ -88,16 +88,15 @@ fun AppleGameScreen(
             // 시간제한
             TimeProgressBar(viewModel = viewModel)
 
-            Spacer(modifier = Modifier.height(30.dp))
-
-            // 사과 그리드
             Box(
                 modifier = Modifier
                     .padding(16.dp)
+                    .weight(1f) // Box Comp가 부모의 나머지 모든 공간 차지
             ) {
                 AppleGrid(viewModel, cellSize)
                 DragSelectionBox(viewModel)
             }
+            Spacer(Modifier.height(50.dp))
 
             // 게임 오버 다이얼로그
             if (viewModel.appleGameState is AppleGameState.GameOver) {
