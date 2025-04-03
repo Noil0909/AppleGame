@@ -24,14 +24,14 @@ fun GameOverDialog(
         modifier = modifier,
         title = {
             Text(
-                text = "게임 종료!",
+                text = "게임 오버!",
                 style = MaterialTheme.typography.headlineSmall
             )
         },
         text = {
             Column {
                 Text(
-                    text = "최종 점수: $score",
+                    text = "점수: $score",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
@@ -54,7 +54,7 @@ fun GameOverDialog(
                     containerColor = Color(0xFF4CAF50)
                 )
             ) {
-                Text("메인 메뉴")
+                Text("처음으로")
             }
         }
     )

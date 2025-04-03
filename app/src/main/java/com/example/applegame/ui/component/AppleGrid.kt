@@ -72,7 +72,7 @@ fun AppleItem(
                     scaleY = if (isSelected) 1.2f else 1f
                 },
             colorFilter = if (isSelected) tint(Color.Red) else null,
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Fit
         )
         Text(
             text = "${apple.number}",

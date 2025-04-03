@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applegame.R
+import com.example.applegame.ui.component.GameSettingsDialog
 import com.example.applegame.ui.navigation.Screen
 
 @Composable
@@ -222,28 +223,12 @@ fun MainScreen( onNavigate: (Screen) -> Unit) {
         }
 
         // 설정 다이얼로그
-        if (showSettings) {
-            AlertDialog(
-                onDismissRequest = { showSettings = false },
-                title = { Text("환경설정") },
-                text = {
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(painter = painterResource(id = R.drawable.music_icon),
-                                contentDescription = "BGM",
-                                Modifier.size(24.dp)
-                            )
-//                            Slider(
-//                                value = bgmVolume,
-//                                onValueChange = { bgmVolume = it },
-//                                modifier = Modifier.weight(1f)
-//                            )
-                        }
-                        // 추가 설정 항목
-                    }
-                },
-                confirmButton = { /* 확인 버튼 */ }
-            )
-        }
+        GameSettingsDialog(
+            showDialog = showSettings,
+            onDismiss = { showSettings = false },
+            isBgmOn = isBgmOn,
+            onBgmToggle = { isBgmOn = it }
+            // 여기서는 showGoMainButton, showRestartButton 기본값 false 이므로 버튼 표시 X
+        )
     }
 }

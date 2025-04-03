@@ -1,0 +1,95 @@
+package com.example.applegame.ui.component
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.example.applegame.R
+
+@Composable
+fun GameSettingsDialog(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    isBgmOn: Boolean,
+    onBgmToggle: (Boolean) -> Unit,
+    // 세팅 dialog 재사용
+    showGoMainButton: Boolean = false,
+    showRestartButton: Boolean = false,
+    onGoMain: () -> Unit = {},
+    onRestartGame: () -> Unit = {},
+) {
+    if(!showDialog) return
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {Text("환경설정", style = MaterialTheme.typography.titleLarge)},
+        text = {
+            Column{
+                Row(verticalAlignment = Alignment.CenterVertically){
+                    Icon(
+                        painter = painterResource(R.drawable.bgm_icon),
+                        contentDescription = "BGM Icon",
+                        modifier = Modifier.size(24.dp),
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Switch(
+                        checked = isBgmOn,
+                        onCheckedChange = onBgmToggle
+                    )
+                }
+
+            }
+        },
+        confirmButton = {
+            if (showRestartButton){
+                Button(
+                    onClick = {
+                        onDismiss()
+                        onRestartGame
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFF6B6B)
+                    )
+                ){
+                    Text("다시하기")
+                }
+            }// 필요없으면 지우기
+            else{
+                TextButton(onClick = onDismiss){Text("확인")
+                }
+            }
+        },
+        dismissButton = {
+                if(showGoMainButton){
+                    Button(
+                        onClick = {
+                            onDismiss()
+                            onGoMain()
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF4CAF50)
+                        )
+                    ){
+                        Text("처음으로")
+                    }
+                }
+            },
+        textContentColor = Color.Black
+    )
+
+}
