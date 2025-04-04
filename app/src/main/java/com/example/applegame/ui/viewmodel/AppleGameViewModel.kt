@@ -1,8 +1,10 @@
 package com.example.applegame.ui.viewmodel
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,117 +13,93 @@ import com.example.applegame.domain.model.AppleGameState
 import com.example.applegame.ui.utils.DragUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.max
+import kotlin.math.min
 
 class AppleGameViewModel : ViewModel() {
 
-    private val _apples = mutableStateListOf<Apple>()
-    val apples: List<Apple> get() = _apples
+    val rows = 18
+    val cols = 9
 
-    private val _score = mutableStateOf(0)
-    val score: State<Int> get() = _score
+    private val _grid = mutableStateListOf<MutableList<Int>>()
+    val grid: List<List<Int>> get() = _grid
 
-    private val _selectedIds = mutableStateListOf<Int>()
-    val selectedIds: List<Int> get() = _selectedIds
+    var selectedCells by mutableStateOf(setOf<Pair<Int, Int>>())
+        private set
 
-    private val _remainingTime = mutableStateOf(120)
-    val remainingTime: Int get() = _remainingTime.value
+    var score by mutableStateOf(0)
+        private set
 
-    private val _appleGameState = mutableStateOf<AppleGameState>(AppleGameState.Playing)
-    val appleGameState: AppleGameState get() = _appleGameState.value
+    var progress by mutableStateOf(1f)
+        private set
 
-    // 드래그 영역 상태
-    private val _dragStart = mutableStateOf<Offset?>(null)
-    val dragStart: Offset? get() = _dragStart.value
-
-    private val _dragEnd = mutableStateOf<Offset?>(null)
-    val dragEnd: Offset? get() = _dragEnd.value
+    private var startRow = 0
+    private var startCol = 0
+    var cellSizePx = 1f  // 추후 계산용
 
     init {
         resetGame()
-        startTimer()
     }
 
-    // === 게임 초기화 ===
-    private fun resetGame() {
-        _apples.clear()
-        repeat(150) { index ->
-            _apples.add(
-                Apple(
-                    id = index,
-                    number = (1..9).random(),
-                    position = index // position = 고정된 그리드 인덱스
-                )
-            )
+    fun resetGame() {
+        _grid.clear()
+        repeat(rows) {
+            _grid.add(MutableList(cols) { (1..9).random() })
         }
-        _score.value = 0
-        _selectedIds.clear()
+        score = 0
+        selectedCells = emptySet()
+        progress = 1f
     }
 
-    // 드래그 영역 업데이트
-    fun updateDragArea(
-        start: Offset?,
-        end: Offset?,
-        cellSizePx: Float,
-        gridTopLeft: Offset
-    ) {
-        // 드래그 좌표를 그리드 기준 로컬 좌표로 변환
-        _dragStart.value = start?.minus(gridTopLeft)
-        _dragEnd.value = end?.minus(gridTopLeft)
-        _selectedIds.clear()
+    fun startDrag(offsetX: Float, offsetY: Float) {
+        val (r, c) = offsetToCell(offsetX, offsetY)
+        startRow = r
+        startCol = c
+        selectedCells = emptySet()
+    }
 
-        val localStart = _dragStart.value
-        val localEnd = _dragEnd.value
+    fun updateDrag(offsetX: Float, offsetY: Float) {
+        val (r2, c2) = offsetToCell(offsetX, offsetY)
+        val r1 = min(startRow, r2)
+        val r3 = max(startRow, r2)
+        val c1 = min(startCol, c2)
+        val c3 = max(startCol, c2)
 
-        if (localStart != null && localEnd != null) {
-            val dragRect = DragUtils.createDragRect(localStart, localEnd)
-            _selectedIds.addAll(
-                DragUtils.calculateSelectedApples(
-                    apples = _apples,
-                    dragRect = dragRect,
-                    cellSizePx = cellSizePx,
-                    gridTopLeft = Offset.Zero // 이제 이미 로컬 좌표로 변환되었음
-                )
-            )
+        val selected = mutableSetOf<Pair<Int, Int>>()
+        for (r in r1..r3) {
+            for (c in c1..c3) {
+                selected.add(r to c)
+            }
         }
+        selectedCells = selected
     }
 
-    // 드래그 종료 시 선택 확인
-    fun confirmSelection() {
-        if (_selectedIds.sumOf { id ->
-                _apples.first { it.id == id }.number
-            } == 10) {
-            removeMatchedApples()
+    fun endDrag() {
+        val sum = selectedCells.sumOf { (r, c) -> _grid[r][c] }
+        if (sum == 10) {
+            selectedCells.forEach { (r, c) ->
+                _grid[r][c] = 0
+            }
+            score += selectedCells.size
         }
-        _selectedIds.clear() // 선택 해제
-        _dragStart.value = null
-        _dragEnd.value = null
+        selectedCells = emptySet()
     }
 
-    private fun removeMatchedApples() {
-        _apples.replaceAll { apple ->
-            if (apple.id in _selectedIds) apple.copy(number = 0) else apple
-        }
-        _score.value += _selectedIds.size * 100
+    private fun offsetToCell(x: Float, y: Float): Pair<Int, Int> {
+        val col = (x / cellSizePx).toInt().coerceIn(0, cols - 1)
+        val row = (y / cellSizePx).toInt().coerceIn(0, rows - 1)
+        return row to col
     }
 
-    // === 타이머 로직 ===
-    private fun startTimer() {
+    fun startTimer(durationSec: Int = 120) {
         viewModelScope.launch {
-            while (_remainingTime.value > 0 && _appleGameState.value is AppleGameState.Playing) {
-                delay(1000L)
-                _remainingTime.value--
-            }
-            if (_remainingTime.value <= 0) {
-                _appleGameState.value = AppleGameState.GameOver(_score.value)
+            val total = durationSec * 1000
+            val steps = 120  // 프레임 수
+            val delayMs = total / steps
+            for (i in 1..steps) {
+                delay(delayMs.toLong())
+                progress = 1f - i / steps.toFloat()
             }
         }
-    }
-
-    // === 게임 재시작 ===
-    fun restartGame() {
-        _remainingTime.value = 120
-        _appleGameState.value = AppleGameState.Playing
-        resetGame()
-        startTimer()
     }
 }

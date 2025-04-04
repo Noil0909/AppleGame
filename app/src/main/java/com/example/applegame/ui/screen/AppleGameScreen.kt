@@ -26,6 +26,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
@@ -45,6 +46,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -54,77 +56,104 @@ import androidx.compose.ui.unit.sp
 import com.example.applegame.R
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
-import com.example.applegame.ui.component.AppleGrid
-import com.example.applegame.ui.component.DragSelectionBox
-import com.example.applegame.ui.component.GameInfoHeader
-import com.example.applegame.ui.component.GameOverDialog
-import com.example.applegame.ui.component.GameSettingsDialog
-import com.example.applegame.ui.component.TimeProgressBar
+import com.example.applegame.ui.component.AppleCell
+//import com.example.applegame.ui.component.AppleGrid
+//import com.example.applegame.ui.component.DragSelectionBox
+//import com.example.applegame.ui.component.GameInfoHeader
+//import com.example.applegame.ui.component.GameOverDialog
+//import com.example.applegame.ui.component.GameSettingsDialog
+//import com.example.applegame.ui.component.TimeProgressBar
 import com.example.applegame.ui.utils.DragUtils
 import com.example.applegame.ui.viewmodel.AppleGameViewModel
 
 @Composable
-fun AppleGameScreen(
-    viewModel: AppleGameViewModel = viewModel(),
-    onBackToMain: () -> Unit
-) {
-    val configuration = LocalConfiguration.current
-    val cellSize = (configuration.screenWidthDp.dp - 32.dp) / 10
+fun AppleGameScreen(viewModel: AppleGameViewModel = viewModel(),
+                    onBackToMain: () -> Unit) {
 
-    var showSettings by remember { mutableStateOf(false) }
-    var isBgmOn by rememberSaveable { mutableStateOf(true) }
+    val grid = viewModel.grid
+    val score = viewModel.score
+    val progress = viewModel.progress
+    val selected = viewModel.selectedCells
 
-    Box(
+    var cellSize by remember { mutableStateOf(0f) }
+    var gridOffset by remember { mutableStateOf(Offset.Zero) }
+
+
+    LaunchedEffect(Unit) {
+        viewModel.startTimer()
+    }
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .padding(16.dp)
     ) {
-
-        Column(
-            modifier = Modifier
-                .padding(top = 30.dp, bottom = 30.dp)
-                .fillMaxSize()
-                .background(Color.White)
+        // 상단 정보 영역
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // 점수 및 헤더
-            GameInfoHeader(
-                viewModel = viewModel,
-                onShowSettings = {showSettings = true}
-                )
-            TimeProgressBar(viewModel = viewModel)
+            Text(text = "남은 시간", fontSize = 16.sp)
+            Text(text = "점수: $score", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        }
 
-            Spacer(Modifier.height(40.dp))
+        Spacer(Modifier.height(8.dp))
 
-            Box(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .weight(1f) // Box Comp가 부모의 나머지 모든 공간 차지
-            )
-            {
-                AppleGrid(viewModel, cellSize)
-                DragSelectionBox(viewModel)
-            }
+        // 타이머 ProgressBar
+        LinearProgressIndicator(
+            progress = progress,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(12.dp)
+                .clip(RoundedCornerShape(6.dp))
+        )
 
-            Spacer(Modifier.height(50.dp))
+        Spacer(Modifier.height(24.dp))
 
-            GameSettingsDialog(
-                showDialog = showSettings,
-                onDismiss = { showSettings = false },
-                isBgmOn = isBgmOn,
-                onBgmToggle = { isBgmOn = it },
-                showGoMainButton = true,
-                showRestartButton = true,
-                onGoMain = { /* 메인으로 이동 로직 */ },
-                onRestartGame = { viewModel.restartGame() }
-            )
-
-            // 게임 오버 다이얼로그
-            if (viewModel.appleGameState is AppleGameState.GameOver) {
-                GameOverDialog(
-                    score = (viewModel.appleGameState as AppleGameState.GameOver).score,
-                    onRestart = { viewModel.restartGame() },
-                    onMainMenu = onBackToMain
-                )
+        // AppleGrid (드래그 감지 포함)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDragStart = { offset ->
+                            val localOffset = offset - gridOffset
+                            viewModel.startDrag(localOffset.x, localOffset.y)
+                        },
+                        onDrag = { change, _ ->
+                            val localOffset = change.position - gridOffset
+                            viewModel.updateDrag(localOffset.x, localOffset.y)
+                        },
+                        onDragEnd = {
+                            viewModel.endDrag()
+                        }
+                    )
+                },
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Column(
+                modifier = Modifier.onGloballyPositioned {
+                    val position = it.positionInRoot()
+                    gridOffset = position  // 좌상단 좌표 기억
+                }
+            ) {
+                grid.forEachIndexed { rowIndex, row ->
+                    Row {
+                        row.forEachIndexed { colIndex, value ->
+                            AppleCell(
+                                value = value,
+                                isSelected = selected.contains(rowIndex to colIndex),
+                                onSizeReady = {
+                                    if (cellSize == 0f) {
+                                        cellSize = it
+                                        viewModel.cellSizePx = it
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
             }
         }
     }
