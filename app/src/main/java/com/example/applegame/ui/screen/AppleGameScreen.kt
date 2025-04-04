@@ -79,7 +79,6 @@ fun AppleGameScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Spacer(modifier = Modifier.height(30.dp))
 
         Column(
             modifier = Modifier
@@ -92,15 +91,16 @@ fun AppleGameScreen(
                 viewModel = viewModel,
                 onShowSettings = {showSettings = true}
                 )
-
-            // 시간제한
             TimeProgressBar(viewModel = viewModel)
+
+            Spacer(Modifier.height(40.dp))
 
             Box(
                 modifier = Modifier
                     .padding(16.dp)
                     .weight(1f) // Box Comp가 부모의 나머지 모든 공간 차지
-            ) {
+            )
+            {
                 AppleGrid(viewModel, cellSize)
                 DragSelectionBox(viewModel)
             }

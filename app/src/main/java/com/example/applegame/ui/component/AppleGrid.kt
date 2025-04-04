@@ -31,7 +31,7 @@ import com.example.applegame.ui.viewmodel.AppleGameViewModel
 @Composable
 fun AppleGrid(
     viewModel: AppleGameViewModel,
-    cellSize: Dp
+    cellSize: Dp,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(10),
