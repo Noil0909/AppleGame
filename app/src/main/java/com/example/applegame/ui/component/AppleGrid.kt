@@ -34,10 +34,11 @@ fun AppleGrid(
     cellSize: Dp
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(10),
+        columns = GridCells.Fixed(9),
         modifier = Modifier
+            .padding(top=50.dp, start = 20.dp, end = 20.dp)
             .fillMaxWidth()
-            .aspectRatio(10f / 15f) // 10x15 비율 고정
+            .aspectRatio(9f / 16f)
     ) {
         items(viewModel.apples.sortedBy { it.position }) { apple ->
             if (apple.number != 0) {
@@ -59,8 +60,8 @@ fun AppleItem(
 ) {
     Box(
         modifier = Modifier
-            .size(cellSize)
-            .padding(2.dp)
+            .size(cellSize * 0.9f)
+            .padding(1.dp)
     ) {
         Image(
             painter = painterResource(R.drawable.apple2_icon),
@@ -72,7 +73,7 @@ fun AppleItem(
                     scaleY = if (isSelected) 1.2f else 1f
                 },
             colorFilter = if (isSelected) tint(Color.Red) else null,
-            contentScale = ContentScale.Fit
+            contentScale = ContentScale.Inside
         )
         Text(
             text = "${apple.number}",

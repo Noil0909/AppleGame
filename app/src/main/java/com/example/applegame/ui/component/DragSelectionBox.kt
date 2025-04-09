@@ -21,7 +21,7 @@ import com.example.applegame.ui.viewmodel.AppleGameViewModel
 fun BoxScope.DragSelectionBox(viewModel: AppleGameViewModel) {
     val density = LocalDensity.current
     val cellSizePx = with(density) {
-        (LocalConfiguration.current.screenWidthDp.dp - 32.dp).toPx() / 10
+        (LocalConfiguration.current.screenWidthDp.dp - 40.dp).toPx() / 9
     }
 
     Box(
@@ -34,7 +34,7 @@ fun BoxScope.DragSelectionBox(viewModel: AppleGameViewModel) {
                     },
                     onDrag = { change, _ ->
                         viewModel.updateDragArea(
-                            viewModel.dragStart?.plus(Offset.Zero), // gridTopLeft 대신 Offset.Zero
+                            viewModel.dragStart?.plus(Offset.Zero), // gridTopLeft 대신 Offset.Zero. 화면 시작 좌표가(0,0)이니까
                             change.position,
                             cellSizePx,
                             Offset.Zero

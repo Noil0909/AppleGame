@@ -69,7 +69,8 @@ fun AppleGameScreen(
     onBackToMain: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
-    val cellSize = (configuration.screenWidthDp.dp - 32.dp) / 10
+    val cellSize = (configuration.screenWidthDp.dp - 40.dp) / 9
+
 
     var showSettings by remember { mutableStateOf(false) }
     var isBgmOn by rememberSaveable { mutableStateOf(true) }
@@ -98,7 +99,6 @@ fun AppleGameScreen(
 
             Box(
                 modifier = Modifier
-                    .padding(16.dp)
                     .weight(1f) // Box Comp가 부모의 나머지 모든 공간 차지
             ) {
                 AppleGrid(viewModel, cellSize)
@@ -114,8 +114,8 @@ fun AppleGameScreen(
                 onBgmToggle = { isBgmOn = it },
                 showGoMainButton = true,
                 showRestartButton = true,
-                onGoMain = { /* 메인으로 이동 로직 */ },
-                onRestartGame = { viewModel.restartGame() }
+                onRestart = { viewModel.restartGame() },
+                onMainMenu = onBackToMain
             )
 
             // 게임 오버 다이얼로그

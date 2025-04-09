@@ -55,12 +55,6 @@ fun GameInfoHeader(
             contentAlignment = Alignment.Center
         ){
             Row(verticalAlignment = Alignment.CenterVertically){
-                Icon(
-                    painter = painterResource(R.drawable.apple1_icon),
-                    contentDescription = "점수",
-                    tint = Color(0xFFFF6B6B),
-                    modifier = Modifier.size(24.dp)
-                )
                 Text(
                     text = "${viewModel.score.value}",
                     style = MaterialTheme.typography.titleLarge,

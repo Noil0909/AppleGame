@@ -1,5 +1,6 @@
 package com.example.applegame.ui.component
 
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -24,8 +25,8 @@ fun TimeProgressBar(viewModel: AppleGameViewModel) {
     val targetProgress = viewModel.remainingTime / 120f
 
     val animatedProgress by animateFloatAsState(
-        targetValue = targetProgress,
-        animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
+        targetValue = if (viewModel.remainingTime == 120) 1f else targetProgress, // 게임이 시작되거나 재시작 시 바로 꽉 차게 설정
+        animationSpec = tween(durationMillis = 0) // 애니메이션 없이 바로 설정
     )
 
     LinearProgressIndicator(

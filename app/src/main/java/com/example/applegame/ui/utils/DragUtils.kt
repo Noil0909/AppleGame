@@ -22,10 +22,10 @@ object DragUtils {
         gridTopLeft: Offset
     ): List<Int> {
         return apples.filter { apple ->
-            val row = apple.position / 10
-            val col = apple.position % 10
+            val row = apple.position / 9
+            val col = apple.position % 9
 
-            // gridTopLeft가 이미 로컬 좌표 기준이라면 아래처럼 계산
+            // 각 사과의 위치 계산
             val appleLeft = col * cellSizePx
             val appleTop = row * cellSizePx
 

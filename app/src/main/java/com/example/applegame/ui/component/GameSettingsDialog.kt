@@ -29,8 +29,8 @@ fun GameSettingsDialog(
     // 세팅 dialog 재사용
     showGoMainButton: Boolean = false,
     showRestartButton: Boolean = false,
-    onGoMain: () -> Unit = {},
-    onRestartGame: () -> Unit = {},
+    onMainMenu: () -> Unit = {},
+    onRestart: () -> Unit = {},
 ) {
     if(!showDialog) return
 
@@ -60,7 +60,7 @@ fun GameSettingsDialog(
                 Button(
                     onClick = {
                         onDismiss()
-                        onRestartGame
+                        onRestart
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFFF6B6B)
@@ -79,7 +79,7 @@ fun GameSettingsDialog(
                     Button(
                         onClick = {
                             onDismiss()
-                            onGoMain()
+                            onMainMenu()
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF4CAF50)

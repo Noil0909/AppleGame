@@ -44,7 +44,7 @@ class AppleGameViewModel : ViewModel() {
     // === 게임 초기화 ===
     private fun resetGame() {
         _apples.clear()
-        repeat(150) { index ->
+        repeat(144) { index ->
             _apples.add(
                 Apple(
                     id = index,
@@ -65,8 +65,8 @@ class AppleGameViewModel : ViewModel() {
         gridTopLeft: Offset
     ) {
         // 드래그 좌표를 그리드 기준 로컬 좌표로 변환
-        _dragStart.value = start?.minus(gridTopLeft)
-        _dragEnd.value = end?.minus(gridTopLeft)
+        _dragStart.value = start?.minus(Offset.Zero)
+        _dragEnd.value = end?.minus(Offset.Zero)
         _selectedIds.clear()
 
         val localStart = _dragStart.value
@@ -74,12 +74,14 @@ class AppleGameViewModel : ViewModel() {
 
         if (localStart != null && localEnd != null) {
             val dragRect = DragUtils.createDragRect(localStart, localEnd)
+
+            // 각 그리드의 위치를 기반으로 드래그된 사과를 선택
             _selectedIds.addAll(
                 DragUtils.calculateSelectedApples(
                     apples = _apples,
                     dragRect = dragRect,
                     cellSizePx = cellSizePx,
-                    gridTopLeft = Offset.Zero // 이제 이미 로컬 좌표로 변환되었음
+                    gridTopLeft = Offset.Zero
                 )
             )
         }
