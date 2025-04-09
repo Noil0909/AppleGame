@@ -20,16 +20,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,6 +44,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.StrokeCap
@@ -53,6 +61,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
 import com.example.applegame.R
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
@@ -65,95 +74,93 @@ import com.example.applegame.ui.component.AppleCell
 //import com.example.applegame.ui.component.TimeProgressBar
 import com.example.applegame.ui.utils.DragUtils
 import com.example.applegame.ui.viewmodel.AppleGameViewModel
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun AppleGameScreen(viewModel: AppleGameViewModel = viewModel(),
                     onBackToMain: () -> Unit) {
+    val circles by viewModel.circles.collectAsState()
+    val rows = 16
+    val cols = 9
 
-    val grid = viewModel.grid
-    val score = viewModel.score
-    val progress = viewModel.progress
-    val selected = viewModel.selectedCells
+    var dragStart by remember { mutableStateOf<Offset?>(null) }
+    var dragEnd by remember { mutableStateOf<Offset?>(null) }
 
-    var cellSize by remember { mutableStateOf(0f) }
-    var gridOffset by remember { mutableStateOf(Offset.Zero) }
-
-
-    LaunchedEffect(Unit) {
-        viewModel.startTimer()
-    }
-
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .background(Color.White)
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDragStart = {
+                        dragStart = it
+                        dragEnd = it
+                    },
+                    onDrag = { change, _ ->
+                        dragEnd = change.position
+                        viewModel.handleDrag(dragStart, dragEnd)
+                        change.consume()
+                    },
+                    onDragEnd = {
+                        viewModel.handleDragEnd()
+                        dragStart = null
+                        dragEnd = null
+                    }
+                )
+            }
     ) {
-        // 상단 정보 영역
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "남은 시간", fontSize = 16.sp)
-            Text(text = "점수: $score", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        }
+            for (row in 0 until rows) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    for (col in 0 until cols) {
+                        val index = row * cols + col
+                        val circle = circles[index]
 
-        Spacer(Modifier.height(8.dp))
-
-        // 타이머 ProgressBar
-        LinearProgressIndicator(
-            progress = progress,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(12.dp)
-                .clip(RoundedCornerShape(6.dp))
-        )
-
-        Spacer(Modifier.height(24.dp))
-
-        // AppleGrid (드래그 감지 포함)
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp)
-                .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDragStart = { offset ->
-                            val localOffset = offset - gridOffset
-                            viewModel.startDrag(localOffset.x, localOffset.y)
-                        },
-                        onDrag = { change, _ ->
-                            val localOffset = change.position - gridOffset
-                            viewModel.updateDrag(localOffset.x, localOffset.y)
-                        },
-                        onDragEnd = {
-                            viewModel.endDrag()
-                        }
-                    )
-                },
-            contentAlignment = Alignment.TopCenter
-        ) {
-            Column(
-                modifier = Modifier.onGloballyPositioned {
-                    val position = it.positionInRoot()
-                    gridOffset = position  // 좌상단 좌표 기억
-                }
-            ) {
-                grid.forEachIndexed { rowIndex, row ->
-                    Row {
-                        row.forEachIndexed { colIndex, value ->
-                            AppleCell(
-                                value = value,
-                                isSelected = selected.contains(rowIndex to colIndex),
-                                onSizeReady = {
-                                    if (cellSize == 0f) {
-                                        cellSize = it
-                                        viewModel.cellSizePx = it
-                                    }
-                                }
-                            )
+                        if (circle.visible) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .padding(2.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (circle.isSelected) Color.Blue else Color.Cyan
+                                    )
+                                    .onGloballyPositioned { coords ->
+                                        val pos = coords.positionInRoot()
+                                        val size = coords.size.toSize()
+                                        viewModel.updateBounds(index, androidx.compose.ui.geometry.Rect(pos, size))
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = "${circle.number}", fontSize = 12.sp)
+                            }
+                        } else {
+                            Spacer(modifier = Modifier.size(36.dp).padding(2.dp))
                         }
                     }
                 }
+            }
+        }
+
+        // Draw selection rectangle
+        if (dragStart != null && dragEnd != null) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                drawRect(
+                    color = Color.Red.copy(alpha = 0.3f),
+                    topLeft = Offset(minOf(dragStart!!.x, dragEnd!!.x), minOf(dragStart!!.y, dragEnd!!.y)),
+                    size = androidx.compose.ui.geometry.Size(
+                        width = kotlin.math.abs(dragStart!!.x - dragEnd!!.x),
+                        height = kotlin.math.abs(dragStart!!.y - dragEnd!!.y)
+                    )
+                )
             }
         }
     }

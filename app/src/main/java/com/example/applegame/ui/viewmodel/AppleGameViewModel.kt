@@ -6,100 +6,72 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
+import com.example.applegame.domain.model.CircleItem
 import com.example.applegame.ui.utils.DragUtils
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.random.Random
 
 class AppleGameViewModel : ViewModel() {
+    private val rows = 16
+    private val cols = 9
+    private val total = rows * cols
 
-    val rows = 18
-    val cols = 9
+    private val _circles = MutableStateFlow(generateGrid())
+    val circles = _circles.asStateFlow()
 
-    private val _grid = mutableStateListOf<MutableList<Int>>()
-    val grid: List<List<Int>> get() = _grid
+    private val circleBounds = mutableMapOf<Int, Rect>()
 
-    var selectedCells by mutableStateOf(setOf<Pair<Int, Int>>())
-        private set
-
-    var score by mutableStateOf(0)
-        private set
-
-    var progress by mutableStateOf(1f)
-        private set
-
-    private var startRow = 0
-    private var startCol = 0
-    var cellSizePx = 1f  // 추후 계산용
-
-    init {
-        resetGame()
+    fun updateBounds(index: Int, rect: Rect) {
+        circleBounds[index] = rect
     }
 
-    fun resetGame() {
-        _grid.clear()
-        repeat(rows) {
-            _grid.add(MutableList(cols) { (1..9).random() })
-        }
-        score = 0
-        selectedCells = emptySet()
-        progress = 1f
-    }
+    fun handleDrag(start: Offset?, end: Offset?) {
+        if (start == null || end == null) return
 
-    fun startDrag(offsetX: Float, offsetY: Float) {
-        val (r, c) = offsetToCell(offsetX, offsetY)
-        startRow = r
-        startCol = c
-        selectedCells = emptySet()
-    }
+        val selectionRect = Rect(
+            Offset(minOf(start.x, end.x), minOf(start.y, end.y)),
+            Offset(maxOf(start.x, end.x), maxOf(start.y, end.y))
+        )
 
-    fun updateDrag(offsetX: Float, offsetY: Float) {
-        val (r2, c2) = offsetToCell(offsetX, offsetY)
-        val r1 = min(startRow, r2)
-        val r3 = max(startRow, r2)
-        val c1 = min(startCol, c2)
-        val c3 = max(startCol, c2)
-
-        val selected = mutableSetOf<Pair<Int, Int>>()
-        for (r in r1..r3) {
-            for (c in c1..c3) {
-                selected.add(r to c)
+        val updatedCircles = _circles.value.map { circle ->
+            val rect = circleBounds[circle.index]
+            if (circle.visible && rect != null && rect.overlaps(selectionRect)) {
+                circle.copy(isSelected = true)
+            } else {
+                circle.copy(isSelected = false)
             }
         }
-        selectedCells = selected
+
+        _circles.value = updatedCircles
     }
 
-    fun endDrag() {
-        val sum = selectedCells.sumOf { (r, c) -> _grid[r][c] }
+    fun handleDragEnd() {
+        val selected = _circles.value.filter { it.isSelected }
+        val sum = selected.sumOf { it.number }
+
         if (sum == 10) {
-            selectedCells.forEach { (r, c) ->
-                _grid[r][c] = 0
+            _circles.value = _circles.value.map {
+                if (it.isSelected) it.copy(visible = false, isSelected = false)
+                else it.copy(isSelected = false)
             }
-            score += selectedCells.size
+        } else {
+            _circles.value = _circles.value.map { it.copy(isSelected = false) }
         }
-        selectedCells = emptySet()
     }
 
-    private fun offsetToCell(x: Float, y: Float): Pair<Int, Int> {
-        val col = (x / cellSizePx).toInt().coerceIn(0, cols - 1)
-        val row = (y / cellSizePx).toInt().coerceIn(0, rows - 1)
-        return row to col
-    }
-
-    fun startTimer(durationSec: Int = 120) {
-        viewModelScope.launch {
-            val total = durationSec * 1000
-            val steps = 120  // 프레임 수
-            val delayMs = total / steps
-            for (i in 1..steps) {
-                delay(delayMs.toLong())
-                progress = 1f - i / steps.toFloat()
-            }
+    private fun generateGrid(): List<CircleItem> {
+        return List(total) { index ->
+            CircleItem(index = index, number = Random.nextInt(1, 10))
         }
     }
 }
