@@ -4,18 +4,26 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
-import com.example.applegame.ui.utils.DragUtils
+//import com.example.applegame.ui.utils.DragUtils
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class AppleGameViewModel : ViewModel() {
 
-    private val _apples = mutableStateListOf<Apple>()
-    val apples: List<Apple> get() = _apples
+    private val rows = 16
+    private val cols = 9
+    private val total = rows * cols
+
+    private val _apples = MutableStateFlow<List<Apple>>(emptyList())
+    val apples = _apples.asStateFlow()
 
     private val _score = mutableStateOf(0)
     val score: State<Int> get() = _score
@@ -36,77 +44,69 @@ class AppleGameViewModel : ViewModel() {
     private val _dragEnd = mutableStateOf<Offset?>(null)
     val dragEnd: Offset? get() = _dragEnd.value
 
+    private val appleBounds = mutableMapOf<Int, Rect>()
+
     init {
-        resetGame()
+        restartGame()
+    }
+
+    fun updateBounds(index: Int, rect: Rect) {
+        appleBounds[index] = rect
+    }
+
+    fun handleDrag(start: Offset?, end: Offset?) {
+        if (start == null || end == null) return
+
+        val selectionRect = Rect(
+            Offset(minOf(start.x, end.x), minOf(start.y, end.y)),
+            Offset(maxOf(start.x, end.x), maxOf(start.y, end.y))
+        )
+
+        val updatedApples = _apples.value.map { apple ->
+            val rect = appleBounds[apple.id]
+            if (apple.visible && rect != null && rect.overlaps(selectionRect)) {
+                apple.copy(isSelected = true)
+            } else {
+                apple.copy(isSelected = false)
+            }
+        }
+
+        _apples.value = updatedApples
+    }
+
+    fun handleDragEnd() {
+        val selected = _apples.value.filter { it.isSelected }
+        val sum = selected.sumOf { it.number }
+
+        if (sum == 10) {
+            val selectedCount = selected.size
+            _apples.value = _apples.value.map {
+                if (it.isSelected) it.copy(visible = false, isSelected = false)
+                else it.copy(isSelected = false)
+            }
+            _score.value += selectedCount * 100
+        }
+        else {
+            _apples.value = _apples.value.map { it.copy(isSelected = false) }
+        }
+    }
+
+    fun restartGame() {
+        _score.value = 0
+        _remainingTime.value = 120
+        _appleGameState.value = AppleGameState.Playing
+        _apples.value = generateGrid()
+        appleBounds.clear()
         startTimer()
     }
 
-    // === 게임 초기화 ===
-    private fun resetGame() {
-        _apples.clear()
-        repeat(144) { index ->
-            _apples.add(
-                Apple(
-                    id = index,
-                    number = (1..9).random(),
-                    position = index // position = 고정된 그리드 인덱스
-                )
-            )
-        }
-        _score.value = 0
-        _selectedIds.clear()
-    }
 
-    // 드래그 영역 업데이트
-    fun updateDragArea(
-        start: Offset?,
-        end: Offset?,
-        cellSizePx: Float,
-        gridTopLeft: Offset
-    ) {
-        // 드래그 좌표를 그리드 기준 로컬 좌표로 변환
-        _dragStart.value = start?.minus(Offset.Zero)
-        _dragEnd.value = end?.minus(Offset.Zero)
-        _selectedIds.clear()
-
-        val localStart = _dragStart.value
-        val localEnd = _dragEnd.value
-
-        if (localStart != null && localEnd != null) {
-            val dragRect = DragUtils.createDragRect(localStart, localEnd)
-
-            // 각 그리드의 위치를 기반으로 드래그된 사과를 선택
-            _selectedIds.addAll(
-                DragUtils.calculateSelectedApples(
-                    apples = _apples,
-                    dragRect = dragRect,
-                    cellSizePx = cellSizePx,
-                    gridTopLeft = Offset.Zero
-                )
-            )
+    private fun generateGrid(): List<Apple> {
+        return List(total) { id ->
+            Apple(id = id, number = Random.nextInt(1, 10))
         }
     }
 
-    // 드래그 종료 시 선택 확인
-    fun confirmSelection() {
-        if (_selectedIds.sumOf { id ->
-                _apples.first { it.id == id }.number
-            } == 10) {
-            removeMatchedApples()
-        }
-        _selectedIds.clear() // 선택 해제
-        _dragStart.value = null
-        _dragEnd.value = null
-    }
-
-    private fun removeMatchedApples() {
-        _apples.replaceAll { apple ->
-            if (apple.id in _selectedIds) apple.copy(number = 0) else apple
-        }
-        _score.value += _selectedIds.size * 100
-    }
-
-    // === 타이머 로직 ===
     private fun startTimer() {
         viewModelScope.launch {
             while (_remainingTime.value > 0 && _appleGameState.value is AppleGameState.Playing) {
@@ -117,13 +117,5 @@ class AppleGameViewModel : ViewModel() {
                 _appleGameState.value = AppleGameState.GameOver(_score.value)
             }
         }
-    }
-
-    // === 게임 재시작 ===
-    fun restartGame() {
-        _remainingTime.value = 120
-        _appleGameState.value = AppleGameState.Playing
-        resetGame()
-        startTimer()
     }
 }
