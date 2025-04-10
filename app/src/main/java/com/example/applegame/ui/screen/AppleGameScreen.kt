@@ -4,6 +4,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -114,6 +116,8 @@ fun AppleGameScreen(
         ) {
             GameInfoHeader(viewModel = viewModel, onShowSettings = { showSettings = true })
             TimeProgressBar(viewModel = viewModel)
+            Spacer(modifier = Modifier.height(30.dp))
+
 
             AppleGameBoard(
                 apples = apples,
@@ -178,7 +182,7 @@ fun AppleGameBoard(
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
         for (row in 0 until rows) {
             Row(
@@ -201,20 +205,24 @@ fun AppleGameBoard(
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            val painter: Painter = painterResource(id = R.drawable.apple2_icon)
                             Image(
-                                painter = painter,
+                                painter = painterResource(id = R.drawable.apple2_icon),
                                 contentDescription = null,
-                                modifier = Modifier.fillMaxSize()
+                                colorFilter = if(apple.isSelected) tint(Color.Red) else null,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .graphicsLayer {
+                                        scaleX = if (apple.isSelected) 1.1f else 1f
+                                        scaleY = if (apple.isSelected) 1.1f else 1f
+                                    },
                             )
-                            if (apple.isSelected) {
-                                Box(
-                                    modifier = Modifier
-                                        .matchParentSize()
-                                        .background(Color.Blue.copy(alpha = 0.3f))
-                                )
-                            }
-                            Text(text = "${apple.number}", fontSize = 12.sp, color = Color.Black)
+                            Text(
+                                text = "${apple.number}",
+                                fontSize = 15.sp,
+                                color = Color.White,
+                                modifier = Modifier
+                                    .offset(y=3.dp)
+                            )
                         }
                     } else {
                         Spacer(modifier = Modifier.size(36.dp).padding(2.dp))
