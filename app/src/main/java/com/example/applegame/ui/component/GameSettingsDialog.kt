@@ -60,7 +60,7 @@ fun GameSettingsDialog(
                 Button(
                     onClick = {
                         onDismiss()
-                        onRestart
+                        onRestart()
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFFF6B6B)
