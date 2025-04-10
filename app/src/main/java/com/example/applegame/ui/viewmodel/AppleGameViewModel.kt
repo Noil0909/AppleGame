@@ -37,13 +37,6 @@ class AppleGameViewModel : ViewModel() {
     private val _appleGameState = mutableStateOf<AppleGameState>(AppleGameState.Playing)
     val appleGameState: AppleGameState get() = _appleGameState.value
 
-    // 드래그 영역 상태
-    private val _dragStart = mutableStateOf<Offset?>(null)
-    val dragStart: Offset? get() = _dragStart.value
-
-    private val _dragEnd = mutableStateOf<Offset?>(null)
-    val dragEnd: Offset? get() = _dragEnd.value
-
     private val appleBounds = mutableMapOf<Int, Rect>()
 
     init {
