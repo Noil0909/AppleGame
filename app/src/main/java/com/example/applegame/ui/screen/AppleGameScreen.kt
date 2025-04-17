@@ -115,7 +115,7 @@ fun AppleGameScreen(
                 .padding(top = 30.dp, bottom = 30.dp)
         ) {
             GameInfoHeader(viewModel = viewModel, onShowSettings = { showSettings = true })
-            TimeProgressBar(viewModel = viewModel)
+            TimeProgressBar(viewModel)
             Spacer(modifier = Modifier.height(30.dp))
 
 

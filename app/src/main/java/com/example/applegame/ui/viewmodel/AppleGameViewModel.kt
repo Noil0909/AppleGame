@@ -31,7 +31,7 @@ class AppleGameViewModel : ViewModel() {
     private val _selectedIds = mutableStateListOf<Int>()
     val selectedIds: List<Int> get() = _selectedIds
 
-    private val _remainingTime = mutableStateOf(120)
+    private val _remainingTime = mutableStateOf(10) // 다이어로그 수정중
     val remainingTime: Int get() = _remainingTime.value
 
     private val _appleGameState = mutableStateOf<AppleGameState>(AppleGameState.Playing)
@@ -86,7 +86,7 @@ class AppleGameViewModel : ViewModel() {
 
     fun restartGame() {
         _score.value = 0
-        _remainingTime.value = 120
+        _remainingTime.value = 10 // 다이어로그 수정중
         _appleGameState.value = AppleGameState.Playing
         _apples.value = generateGrid()
         appleBounds.clear()
@@ -106,9 +106,12 @@ class AppleGameViewModel : ViewModel() {
                 delay(1000L)
                 _remainingTime.value--
             }
-            if (_remainingTime.value <= 0) {
-                _appleGameState.value = AppleGameState.GameOver(_score.value)
-            }
+        }
+    }
+
+    fun triggerGameOver() {
+        if (_appleGameState.value !is AppleGameState.GameOver) {
+            _appleGameState.value = AppleGameState.GameOver(_score.value)
         }
     }
 }
