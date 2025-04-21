@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
+import kotlinx.coroutines.Job
 //import com.example.applegame.ui.utils.DragUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,8 @@ class AppleGameViewModel : ViewModel() {
     private val cols = 9
     private val total = rows * cols
 
+    private val totalTime = 10 // 수정필요
+
     private val _apples = MutableStateFlow<List<Apple>>(emptyList())
     val apples = _apples.asStateFlow()
 
@@ -31,7 +34,7 @@ class AppleGameViewModel : ViewModel() {
     private val _selectedIds = mutableStateListOf<Int>()
     val selectedIds: List<Int> get() = _selectedIds
 
-    private val _remainingTime = mutableStateOf(10) // 다이어로그 수정중
+    private val _remainingTime = mutableStateOf(totalTime) // 다이어로그 수정중
     val remainingTime: Int get() = _remainingTime.value
 
     private val _appleGameState = mutableStateOf<AppleGameState>(AppleGameState.Playing)
@@ -39,12 +42,30 @@ class AppleGameViewModel : ViewModel() {
 
     private val appleBounds = mutableMapOf<Int, Rect>()
 
+    private var timerJob: Job? = null
+
     init {
         restartGame()
     }
 
+    fun restartGame() {
+        _score.value = 0
+        _remainingTime.value = totalTime // 다이어로그 수정중
+        _appleGameState.value = AppleGameState.Playing
+        _apples.value = generateGrid()
+        appleBounds.clear()
+        startTimer()
+    }
+
+
     fun updateBounds(index: Int, rect: Rect) {
         appleBounds[index] = rect
+    }
+
+    private fun generateGrid(): List<Apple> {
+        return List(total) { id ->
+            Apple(id = id, number = Random.nextInt(1, 10))
+        }
     }
 
     fun handleDrag(start: Offset?, end: Offset?) {
@@ -84,27 +105,18 @@ class AppleGameViewModel : ViewModel() {
         }
     }
 
-    fun restartGame() {
-        _score.value = 0
-        _remainingTime.value = 10 // 다이어로그 수정중
-        _appleGameState.value = AppleGameState.Playing
-        _apples.value = generateGrid()
-        appleBounds.clear()
-        startTimer()
-    }
-
-
-    private fun generateGrid(): List<Apple> {
-        return List(total) { id ->
-            Apple(id = id, number = Random.nextInt(1, 10))
-        }
-    }
-
     private fun startTimer() {
-        viewModelScope.launch {
-            while (_remainingTime.value > 0 && _appleGameState.value is AppleGameState.Playing) {
-                delay(1000L)
-                _remainingTime.value--
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            while (_remainingTime.value > 0) {
+                delay(1000)
+                _remainingTime.value -= 1
+            }
+
+            // 0.5초 지연 후 게임 오버 트리거
+            delay(1000)
+            if (_appleGameState.value is AppleGameState.Playing) {
+                triggerGameOver()
             }
         }
     }
@@ -114,4 +126,10 @@ class AppleGameViewModel : ViewModel() {
             _appleGameState.value = AppleGameState.GameOver(_score.value)
         }
     }
+
+    /**
+    fun triggerGameOver() {
+        _appleGameState.value = AppleGameState.GameOver(_score.value)
+    }
+    */
 }

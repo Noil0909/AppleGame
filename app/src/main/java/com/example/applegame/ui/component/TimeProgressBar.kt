@@ -33,18 +33,20 @@ import kotlin.math.max
 
 @Composable
 fun TimeProgressBar(viewModel: AppleGameViewModel) {
-    val totalTime = 10_000L // 다이어로그 수정중
-    val gameState = viewModel.appleGameState
-    val progress = remember { Animatable(1f) }
+    val remaining = viewModel.remainingTime
+    val total = 10f // 수정필요 총 시간 (초)
 
-    LaunchedEffect(gameState) {
-        if (gameState is AppleGameState.Playing) {
-            progress.snapTo(1f)
-            progress.animateTo(
-                targetValue = 0f,
-                animationSpec = tween(durationMillis = totalTime.toInt(), easing = LinearEasing)
+    val targetProgress = remaining / total
+    val animatedProgress = remember { Animatable(targetProgress) }
+
+    LaunchedEffect(targetProgress) {
+        if (targetProgress == 1f) {
+            animatedProgress.snapTo(1f) // 즉시 채우기
+        } else {
+            animatedProgress.animateTo(
+                targetValue = targetProgress,
+                animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
             )
-            viewModel.triggerGameOver() //애니메이션이 끝났을 때 GameOver
         }
     }
 
@@ -63,7 +65,7 @@ fun TimeProgressBar(viewModel: AppleGameViewModel) {
         // 진행 바
         drawRoundRect(
             color = Color(0xFF4CAF50),
-            size = Size(size.width * progress.value, size.height),
+            size = Size(size.width * animatedProgress.value, size.height),
             cornerRadius = CornerRadius(8f, 8f)
         )
     }
