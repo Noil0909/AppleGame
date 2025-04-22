@@ -1,8 +1,11 @@
 package com.example.applegame.ui.component
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -36,7 +39,7 @@ fun GameSettingsDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {Text("환경설정", style = MaterialTheme.typography.titleLarge)},
+        title = {Text("게임설정", style = MaterialTheme.typography.titleLarge)},
         text = {
             Column{
                 Row(verticalAlignment = Alignment.CenterVertically){
@@ -57,38 +60,35 @@ fun GameSettingsDialog(
         },
         confirmButton = {
             if (showRestartButton){
-                Button(
-                    onClick = {
-                        onDismiss()
-                        onRestart()
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFF6B6B)
-                    )
-                ){
-                    Text("다시하기")
-                }
-            }// 필요없으면 지우기
-            else{
-                TextButton(onClick = onDismiss){Text("확인")
-                }
-            }
-        },
-        dismissButton = {
-                if(showGoMainButton){
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center){
                     Button(
                         onClick = {
                             onDismiss()
-                            onMainMenu()
-                        },
+                            onRestart()
+                                  },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFFF6B6B)
+                        ),
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Text("다시하기")
+                    }
+
+                    Button(
+                        onClick = {
+                                onDismiss()
+                                onMainMenu()
+                                  },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF4CAF50)
                         )
-                    ){
+                    ) {
                         Text("처음으로")
                     }
                 }
-            },
+            }
+        },
         textContentColor = Color.Black
     )
 
