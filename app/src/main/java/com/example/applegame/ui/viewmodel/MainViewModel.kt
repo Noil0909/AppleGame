@@ -1,4 +1,4 @@
-package com.example.applegame
+package com.example.applegame.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

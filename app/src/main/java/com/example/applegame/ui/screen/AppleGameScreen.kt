@@ -53,6 +53,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -60,6 +61,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.example.applegame.R
+import com.example.applegame.data.record.GameRecordDatabase
+import com.example.applegame.data.record.GameRecordRepository
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
 //import com.example.applegame.ui.component.AppleGrid
@@ -73,9 +76,13 @@ import com.example.applegame.ui.viewmodel.AppleGameViewModel
 
 @Composable
 fun AppleGameScreen(
-    viewModel: AppleGameViewModel = viewModel(),
     onBackToMain: () -> Unit
 ) {
+    val context = LocalContext.current
+    val db = remember { GameRecordDatabase.getInstance(context) }
+    val repository = remember { GameRecordRepository(db.gameRecordDao()) }
+    val viewModel = remember { AppleGameViewModel(repository) }
+
     val apples by viewModel.apples.collectAsState()
     val rows = 16
     val cols = 9

@@ -3,10 +3,14 @@ package com.example.applegame.ui.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applegame.data.record.GameRecordDatabase
+import com.example.applegame.data.record.GameRecordRepository
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
 import kotlinx.coroutines.Job
@@ -17,7 +21,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
-class AppleGameViewModel : ViewModel() {
+class AppleGameViewModel(
+    private val repository: GameRecordRepository
+) : ViewModel() {
 
     private val rows = 16
     private val cols = 9
@@ -123,13 +129,10 @@ class AppleGameViewModel : ViewModel() {
 
     fun triggerGameOver() {
         if (_appleGameState.value !is AppleGameState.GameOver) {
+            viewModelScope.launch {
+                repository.insertRecord(_score.value) // ★ 점수 저장
+            }
             _appleGameState.value = AppleGameState.GameOver(_score.value)
         }
     }
-
-    /**
-    fun triggerGameOver() {
-        _appleGameState.value = AppleGameState.GameOver(_score.value)
-    }
-    */
 }
