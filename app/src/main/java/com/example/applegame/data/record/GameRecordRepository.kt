@@ -23,4 +23,11 @@ class GameRecordRepository(private val dao: GameRecordDao) {
             dao.getAllRecords()
         }
     }
+
+    // 기록 삭제
+    suspend fun deleteRecord(record: GameRecord) {
+        withContext(Dispatchers.IO) {
+            dao.deleteRecord(record)
+        }
+    }
 }

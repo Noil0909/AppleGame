@@ -50,7 +50,7 @@ fun AppNavigation() {
         // 기록 화면
         composable(Screen.Records.name) {
             RecordScreen(
-//                onBackToMain = { navController.popBackStack() }
+               onBackToMain = { navController.popBackStack() }
             )
         }
 
