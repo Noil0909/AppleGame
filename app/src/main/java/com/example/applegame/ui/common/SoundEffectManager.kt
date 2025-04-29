@@ -3,12 +3,20 @@ package com.example.applegame.ui.common
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.SoundPool
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.example.applegame.R
 
 object SoundEffectManager {
 
     private var soundPool: SoundPool? = null
     private var popSoundId: Int? = null
+
+    // 토글 움직이는거 볼수있게함
+    // state가 변해야 recomposition됨
+    var isSoundOn by mutableStateOf(true)
+
     private var isInitialized = false
 
     fun init(context: Context) {
@@ -30,6 +38,7 @@ object SoundEffectManager {
     }
 
     fun playPopSound() {
+        if (!isSoundOn) return // 꺼져있으면 재생 안함
         popSoundId?.let {
             soundPool?.play(it, 1f, 1f, 0, 0, 1f)
         }

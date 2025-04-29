@@ -5,10 +5,19 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 object VibrationManager {
 
+    // 토글 움직이는거 볼수있게함
+    // state가 변해야 recomposition됨
+    var isVibrationOn by mutableStateOf(true)
+
     fun vibrate(context: Context, duration: Long = 20L, amplitude: Int = 50) {
+        if (!isVibrationOn) return
+
         val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // API 31 이상 (Android 12 이상)
             val manager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager

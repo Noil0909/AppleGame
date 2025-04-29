@@ -66,8 +66,11 @@ import com.example.applegame.data.record.GameRecordDatabase
 import com.example.applegame.data.record.GameRecordRepository
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
+import com.example.applegame.ui.common.BgmManager
 import com.example.applegame.ui.common.SoundEffectManager
+import com.example.applegame.ui.common.SoundEffectManager.isSoundOn
 import com.example.applegame.ui.common.VibrationManager
+import com.example.applegame.ui.common.VibrationManager.isVibrationOn
 import com.example.applegame.ui.component.GameInfoHeader
 import com.example.applegame.ui.component.GameOverDialog
 import com.example.applegame.ui.component.GameSettingsDialog
@@ -91,7 +94,7 @@ fun AppleGameScreen(
     var dragEnd by remember { mutableStateOf<Offset?>(null) }
 
     var showSettings by remember { mutableStateOf(false) }
-    var isBgmOn by rememberSaveable { mutableStateOf(true) }
+    var isBgmOn by rememberSaveable { mutableStateOf(BgmManager.isBgmOn) }
 
     LaunchedEffect(Unit) {
         SoundEffectManager.init(context)
@@ -175,7 +178,26 @@ fun AppleGameScreen(
             showDialog = showSettings,
             onDismiss = { showSettings = false },
             isBgmOn = isBgmOn,
-            onBgmToggle = { isBgmOn = it },
+            onBgmToggle = { isOn ->
+                isBgmOn = isOn                   // Compose 상태 업데이트
+                BgmManager.isBgmOn = isOn       // 실제 BGM 로직 반영
+
+                if (isOn) {
+                    BgmManager.startBgm(context, R.raw.applegame_bgm)
+                } else {
+                    BgmManager.stopBgm()
+                }
+            },
+            isSoundOn = isSoundOn,
+            onSoundToggle = {
+                isSoundOn = it
+                SoundEffectManager.isSoundOn = it
+            },
+            isVibrationOn = isVibrationOn,
+            onVibrationToggle = {
+                isVibrationOn = it
+                VibrationManager.isVibrationOn = it
+            },
             showGoMainButton = true,
             showRestartButton = true,
             onRestart = { viewModel.restartGame() },

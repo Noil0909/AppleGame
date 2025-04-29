@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.MediaPlayer
 
 object BgmManager {
+
     private var mediaPlayer: MediaPlayer? = null
     var isBgmOn: Boolean = true // ⚡ BGM on/off 상태 기억
 
@@ -37,7 +38,7 @@ object BgmManager {
             mediaPlayer?.start()
         }
     }
-
+    // 다이어로그 on/off 상태
     fun toggleBgm(context: Context, resId: Int) {
         isBgmOn = !isBgmOn
         if (isBgmOn) {

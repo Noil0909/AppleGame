@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,6 +23,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.applegame.R
+import com.example.applegame.ui.common.SoundEffectManager
+import com.example.applegame.ui.common.SoundEffectManager.isSoundOn
+import com.example.applegame.ui.common.VibrationManager.isVibrationOn
 
 @Composable
 fun GameSettingsDialog(
@@ -29,6 +33,11 @@ fun GameSettingsDialog(
     onDismiss: () -> Unit,
     isBgmOn: Boolean,
     onBgmToggle: (Boolean) -> Unit,
+    isSoundOn: Boolean,
+    onSoundToggle: (Boolean) -> Unit,
+    isVibrationOn: Boolean,
+    onVibrationToggle: (Boolean) -> Unit,
+
     // 세팅 dialog 재사용
     showGoMainButton: Boolean = false,
     showRestartButton: Boolean = false,
@@ -41,21 +50,10 @@ fun GameSettingsDialog(
         onDismissRequest = onDismiss,
         title = {Text("게임설정", style = MaterialTheme.typography.titleLarge)},
         text = {
-            Column{
-                Row(verticalAlignment = Alignment.CenterVertically){
-                    Icon(
-                        painter = painterResource(R.drawable.bgm_icon),
-                        contentDescription = "BGM Icon",
-                        modifier = Modifier.size(24.dp),
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Switch(
-                        checked = isBgmOn,
-                        onCheckedChange = onBgmToggle
-                    )
-                }
-
+            Column {
+                SettingRow(icon = R.drawable.bgm_icon, label = "BGM", checked = isBgmOn, onCheckedChange = onBgmToggle)
+                SettingRow(icon = R.drawable.sound_effect_icon, label = "효과음", checked = isSoundOn, onCheckedChange = onSoundToggle)
+                SettingRow(icon = R.drawable.vibration_icon, label = "진동", checked = isVibrationOn, onCheckedChange = onVibrationToggle)
             }
         },
         confirmButton = {
@@ -91,5 +89,24 @@ fun GameSettingsDialog(
         },
         textContentColor = Color.Black
     )
+}
 
+@Composable
+fun SettingRow(icon: Int, label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = label,
+            tint = Color(0xFFFF6B6B),
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(text = label, modifier = Modifier.weight(1f))
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
+    }
 }
