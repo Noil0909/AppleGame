@@ -39,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.text.font.FontWeight
@@ -58,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applegame.R
+import com.example.applegame.ui.common.BgmManager
 import com.example.applegame.ui.component.GameSettingsDialog
 import com.example.applegame.ui.navigation.Screen
 
@@ -65,6 +68,13 @@ import com.example.applegame.ui.navigation.Screen
 fun MainScreen( onNavigate: (Screen) -> Unit) {
     var showSettings by remember { mutableStateOf(false) }
     var isBgmOn by rememberSaveable { mutableStateOf(true) }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        // 메인화면 진입 시 무조건 처음부터 재생
+        BgmManager.startBgm(context, R.raw.applegame_bgm)
+    }
 
     Column(
         modifier = Modifier

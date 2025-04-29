@@ -135,4 +135,18 @@ class AppleGameViewModel(
             _appleGameState.value = AppleGameState.GameOver(_score.value)
         }
     }
+
+    fun isTouchingNewApple(start: Offset?, end: Offset?): Boolean {
+        if (start == null || end == null) return false
+
+        val selectionRect = Rect(
+            Offset(minOf(start.x, end.x), minOf(start.y, end.y)),
+            Offset(maxOf(start.x, end.x), maxOf(start.y, end.y))
+        )
+
+        // 드래그 박스에 새롭게 들어온 사과를 찾기
+        return apples.value.any { apple ->
+            apple.visible && !apple.isSelected && (appleBounds[apple.id]?.overlaps(selectionRect) == true)
+        }
+    }
 }

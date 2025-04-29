@@ -8,12 +8,12 @@ object BgmManager {
     var isBgmOn: Boolean = true // ⚡ BGM on/off 상태 기억
 
     fun startBgm(context: Context, resId: Int) {
-        if (!isBgmOn) return // bgm 꺼져있으면 시작X
+        if (!isBgmOn) return // bgm 꺼져있으면 시작 X
 
-        stopBgm() // 혹시 기존 BGM 있으면 정리
+        stopBgm() // 🔁 항상 기존 BGM 중지 후 시작 (중복 방지 및 재시작 목적)
         mediaPlayer = MediaPlayer.create(context, resId).apply {
             isLooping = true
-            setVolume(0.2f, 0.2f) // 좌우 볼륨 20%
+            setVolume(0.3f, 0.3f)
             start()
         }
     }

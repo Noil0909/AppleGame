@@ -65,13 +65,11 @@ import com.example.applegame.data.record.GameRecordDatabase
 import com.example.applegame.data.record.GameRecordRepository
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
-//import com.example.applegame.ui.component.AppleGrid
-//import com.example.applegame.ui.component.DragSelectionBox
+import com.example.applegame.ui.common.VibrationManager
 import com.example.applegame.ui.component.GameInfoHeader
 import com.example.applegame.ui.component.GameOverDialog
 import com.example.applegame.ui.component.GameSettingsDialog
 import com.example.applegame.ui.component.TimeProgressBar
-//import com.example.applegame.ui.utils.DragUtils
 import com.example.applegame.ui.viewmodel.AppleGameViewModel
 
 @Composable
@@ -105,7 +103,15 @@ fun AppleGameScreen(
                     },
                     onDrag = { change, _ ->
                         dragEnd = change.position
+
+                        // 사과에 닿으면 진동
+                        if (viewModel.isTouchingNewApple(dragStart, dragEnd)) {
+                            VibrationManager.vibrate(context)
+                        }
+
+                        // 드래그할 때 매번 ViewModel에 알려줌
                         viewModel.handleDrag(dragStart, dragEnd)
+
                         change.consume()
                     },
                     onDragEnd = {
