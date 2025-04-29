@@ -29,6 +29,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
@@ -65,6 +66,7 @@ import com.example.applegame.data.record.GameRecordDatabase
 import com.example.applegame.data.record.GameRecordRepository
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
+import com.example.applegame.ui.common.SoundEffectManager
 import com.example.applegame.ui.common.VibrationManager
 import com.example.applegame.ui.component.GameInfoHeader
 import com.example.applegame.ui.component.GameOverDialog
@@ -90,6 +92,10 @@ fun AppleGameScreen(
 
     var showSettings by remember { mutableStateOf(false) }
     var isBgmOn by rememberSaveable { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        SoundEffectManager.init(context)
+    }
 
     Box(
         modifier = Modifier

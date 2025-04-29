@@ -13,6 +13,7 @@ import com.example.applegame.data.record.GameRecordDatabase
 import com.example.applegame.data.record.GameRecordRepository
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
+import com.example.applegame.ui.common.SoundEffectManager
 import kotlinx.coroutines.Job
 //import com.example.applegame.ui.utils.DragUtils
 import kotlinx.coroutines.delay
@@ -100,6 +101,10 @@ class AppleGameViewModel(
 
         if (sum == 10) {
             val selectedCount = selected.size
+
+            // 효과음
+            SoundEffectManager.playPopSound()
+
             _apples.value = _apples.value.map {
                 if (it.isSelected) it.copy(visible = false, isSelected = false)
                 else it.copy(isSelected = false)
