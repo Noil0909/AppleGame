@@ -10,7 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.applegame.ui.screen.AppleGameScreen
 import com.example.applegame.ui.screen.MainScreen
 import com.example.applegame.ui.screen.RecordScreen
-import com.example.applegame.ui.screen.SplashScreen
+//import com.example.applegame.ui.screen.SplashScreen
 
 @Composable
 fun AppNavigation() {
@@ -18,18 +18,18 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "splash" // 초기 화면 설정
+        startDestination = "main" // 초기 화면 설정
     ) {
-        // 인트로 화면
-        composable("splash") {
-            SplashScreen(
-                onNavigate = {
-                    navController.navigate("main") {
-                        popUpTo("splash") { inclusive = true } // splash 화면 백 스택에서 제거
-                    }
-                }
-            )
-        }
+//        // 인트로 화면
+//        composable("splash") {
+//            SplashScreen(
+//                onNavigate = {
+//                    navController.navigate("main") {
+//                        popUpTo("splash") { inclusive = true } // splash 화면 백 스택에서 제거
+//                    }
+//                }
+//            )
+//        }
 
         // 메인 화면
         composable(Screen.Main.name) {

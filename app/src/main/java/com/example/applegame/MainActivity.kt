@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import com.example.applegame.ui.common.BgmManager
 import com.example.applegame.ui.navigation.AppNavigation
 import com.example.applegame.ui.theme.AppleGameTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,6 +33,8 @@ class MainActivity : ComponentActivity() {
         hideSystemBars()
 
         enableEdgeToEdge()
+
+        BgmManager.startBgm(this, R.raw.applegame_bgm)
 
         setContent {
             AppleGameTheme {
@@ -51,6 +54,20 @@ class MainActivity : ComponentActivity() {
                         or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        BgmManager.pauseBgm()    }
+
+    override fun onResume() {
+        super.onResume()
+        BgmManager.resumeBgm()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        BgmManager.stopBgm()
     }
 }
 
