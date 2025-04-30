@@ -34,7 +34,7 @@ import kotlin.math.max
 @Composable
 fun TimeProgressBar(viewModel: AppleGameViewModel) {
     val remaining = viewModel.remainingTime
-    val total = 10f // 수정필요 총 시간 (초)
+    val total = 120f // 수정필요 총 시간 (초)
 
     val targetProgress = remaining / total
     val animatedProgress = remember { Animatable(targetProgress) }

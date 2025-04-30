@@ -66,11 +66,12 @@ import com.example.applegame.data.record.GameRecordDatabase
 import com.example.applegame.data.record.GameRecordRepository
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
-import com.example.applegame.ui.common.BgmManager
-import com.example.applegame.ui.common.SoundEffectManager
-import com.example.applegame.ui.common.SoundEffectManager.isSoundOn
-import com.example.applegame.ui.common.VibrationManager
-import com.example.applegame.ui.common.VibrationManager.isVibrationOn
+import com.example.applegame.common.BgmManager
+import com.example.applegame.common.SettingsRepository
+import com.example.applegame.common.SoundEffectManager
+import com.example.applegame.common.SoundEffectManager.isSoundOn
+import com.example.applegame.common.VibrationManager
+import com.example.applegame.common.VibrationManager.isVibrationOn
 import com.example.applegame.ui.component.GameInfoHeader
 import com.example.applegame.ui.component.GameOverDialog
 import com.example.applegame.ui.component.GameSettingsDialog
@@ -82,6 +83,16 @@ fun AppleGameScreen(
     onBackToMain: () -> Unit
 ) {
     val context = LocalContext.current
+
+    val initialBgmOn = remember { mutableStateOf(SettingsRepository.isBgmOn) }
+    val initialSoundOn = remember { mutableStateOf(SettingsRepository.isSoundOn) }
+    val initialVibrationOn = remember { mutableStateOf(SettingsRepository.isVibrationOn) }
+
+    var isBgmOn by rememberSaveable { initialBgmOn }
+    var isSoundOn by rememberSaveable { initialSoundOn }
+    var isVibrationOn by rememberSaveable { initialVibrationOn }
+
+
     val db = remember { GameRecordDatabase.getInstance(context) }
     val repository = remember { GameRecordRepository(db.gameRecordDao()) }
     val viewModel = remember { AppleGameViewModel(repository) }
@@ -94,12 +105,21 @@ fun AppleGameScreen(
     var dragEnd by remember { mutableStateOf<Offset?>(null) }
 
     var showSettings by remember { mutableStateOf(false) }
-    var isBgmOn by rememberSaveable { mutableStateOf(BgmManager.isBgmOn) }
+
 
     LaunchedEffect(Unit) {
+        SettingsRepository.init(context)
+
+        BgmManager.initializeFromPrefs(context)
+        SoundEffectManager.initializeFromPrefs(context)
+        VibrationManager.initializeFromPrefs(context)
+
+        if (BgmManager.isBgmOn) {
+            BgmManager.startBgm(context, R.raw.applegame_bgm)
+        }
+
         SoundEffectManager.init(context)
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -173,30 +193,28 @@ fun AppleGameScreen(
             }
         }
 
-        // 설정 및 게임오버 다이얼로그
+        // 게임설정 및 게임오버 다이얼로그
         GameSettingsDialog(
             showDialog = showSettings,
             onDismiss = { showSettings = false },
             isBgmOn = isBgmOn,
-            onBgmToggle = { isOn ->
-                isBgmOn = isOn                   // Compose 상태 업데이트
-                BgmManager.isBgmOn = isOn       // 실제 BGM 로직 반영
-
-                if (isOn) {
-                    BgmManager.startBgm(context, R.raw.applegame_bgm)
-                } else {
-                    BgmManager.stopBgm()
-                }
+            onBgmToggle = {
+                isBgmOn = it
+                BgmManager.isBgmOn = it
+                SettingsRepository.isBgmOn = it
+                if (it) BgmManager.startBgm(context, R.raw.applegame_bgm) else BgmManager.stopBgm()
             },
             isSoundOn = isSoundOn,
             onSoundToggle = {
                 isSoundOn = it
                 SoundEffectManager.isSoundOn = it
+                SettingsRepository.isSoundOn = it
             },
             isVibrationOn = isVibrationOn,
             onVibrationToggle = {
                 isVibrationOn = it
                 VibrationManager.isVibrationOn = it
+                SettingsRepository.isVibrationOn = it
             },
             showGoMainButton = true,
             showRestartButton = true,

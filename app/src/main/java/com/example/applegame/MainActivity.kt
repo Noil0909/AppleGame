@@ -18,7 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import com.example.applegame.ui.common.BgmManager
+import com.example.applegame.common.BgmManager
+import com.example.applegame.common.SettingsRepository
 import com.example.applegame.ui.navigation.AppNavigation
 import com.example.applegame.ui.theme.AppleGameTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,6 +29,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        SettingsRepository.init(this)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         hideSystemBars()

@@ -230,16 +230,23 @@ fun RecordTableRow(
         ) {
             if (isTopRank) {
                 // 1,2,3등이면 메달 표시
-                val medalEmoji = when (rank) {
-                    1 -> "🥇"
-                    2 -> "🥈"
-                    3 -> "🥉"
-                    else -> ""
+                val medalid = when (rank) {
+                    1 -> R.drawable.apple_gold_medal
+                    2 -> R.drawable.apple_silver_medal
+                    3 -> R.drawable.apple_bronze_medal
+                    else -> R.drawable.green_apple
                 }
-                Text(
-                    text = medalEmoji,
-                    fontSize = 28.sp,
-                    textAlign = TextAlign.Start
+//                Text(
+//                    text = medalEmoji,
+//                    fontSize = 28.sp,
+//                    textAlign = TextAlign.Start
+//                )
+                Image(
+                    painter = painterResource(id = medalid),
+                    contentDescription = "Top Rank Apple Icon",
+                    modifier = Modifier
+                        .size(36.dp)
+                        .align(Alignment.CenterStart)
                 )
             } else {
                 // 나머지는 초록 사과 이미지

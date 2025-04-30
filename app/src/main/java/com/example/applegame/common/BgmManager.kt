@@ -1,4 +1,4 @@
-package com.example.applegame.ui.common
+package com.example.applegame.common
 
 import android.content.Context
 import android.media.MediaPlayer
@@ -6,7 +6,11 @@ import android.media.MediaPlayer
 object BgmManager {
 
     private var mediaPlayer: MediaPlayer? = null
-    var isBgmOn: Boolean = true // ⚡ BGM on/off 상태 기억
+    var isBgmOn: Boolean = true // BGM on/off 상태 기억
+
+    fun initializeFromPrefs(context: Context) {
+        isBgmOn = SettingsRepository.isBgmOn
+    }
 
     fun startBgm(context: Context, resId: Int) {
         if (!isBgmOn) return // bgm 꺼져있으면 시작 X

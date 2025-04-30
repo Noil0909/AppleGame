@@ -1,4 +1,4 @@
-package com.example.applegame.ui.common
+package com.example.applegame.common
 
 import android.content.Context
 import android.media.AudioAttributes
@@ -16,6 +16,11 @@ object SoundEffectManager {
     // 토글 움직이는거 볼수있게함
     // state가 변해야 recomposition됨
     var isSoundOn by mutableStateOf(true)
+
+    fun initializeFromPrefs(context: Context) {
+        isSoundOn = SettingsRepository.isSoundOn
+    }
+
 
     private var isInitialized = false
 

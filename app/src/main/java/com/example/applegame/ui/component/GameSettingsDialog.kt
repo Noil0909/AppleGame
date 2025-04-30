@@ -23,9 +23,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.applegame.R
-import com.example.applegame.ui.common.SoundEffectManager
-import com.example.applegame.ui.common.SoundEffectManager.isSoundOn
-import com.example.applegame.ui.common.VibrationManager.isVibrationOn
+import com.example.applegame.common.SoundEffectManager
+import com.example.applegame.common.SoundEffectManager.isSoundOn
+import com.example.applegame.common.VibrationManager.isVibrationOn
 
 @Composable
 fun GameSettingsDialog(

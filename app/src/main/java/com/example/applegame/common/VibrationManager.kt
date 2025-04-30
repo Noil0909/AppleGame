@@ -1,4 +1,4 @@
-package com.example.applegame.ui.common
+package com.example.applegame.common
 
 import android.content.Context
 import android.os.Build
@@ -14,6 +14,11 @@ object VibrationManager {
     // 토글 움직이는거 볼수있게함
     // state가 변해야 recomposition됨
     var isVibrationOn by mutableStateOf(true)
+
+    fun initializeFromPrefs(context: Context) {
+        isVibrationOn = SettingsRepository.isVibrationOn
+    }
+
 
     fun vibrate(context: Context, duration: Long = 20L, amplitude: Int = 50) {
         if (!isVibrationOn) return

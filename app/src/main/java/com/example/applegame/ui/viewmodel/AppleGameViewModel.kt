@@ -13,7 +13,7 @@ import com.example.applegame.data.record.GameRecordDatabase
 import com.example.applegame.data.record.GameRecordRepository
 import com.example.applegame.domain.model.Apple
 import com.example.applegame.domain.model.AppleGameState
-import com.example.applegame.ui.common.SoundEffectManager
+import com.example.applegame.common.SoundEffectManager
 import kotlinx.coroutines.Job
 //import com.example.applegame.ui.utils.DragUtils
 import kotlinx.coroutines.delay
@@ -30,7 +30,7 @@ class AppleGameViewModel(
     private val cols = 9
     private val total = rows * cols
 
-    private val totalTime = 10 // 수정필요
+    private val totalTime = 120 // 수정필요
 
     private val _apples = MutableStateFlow<List<Apple>>(emptyList())
     val apples = _apples.asStateFlow()

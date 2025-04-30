@@ -60,24 +60,41 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applegame.R
-import com.example.applegame.ui.common.BgmManager
-import com.example.applegame.ui.common.SoundEffectManager
-import com.example.applegame.ui.common.SoundEffectManager.isSoundOn
-import com.example.applegame.ui.common.VibrationManager
-import com.example.applegame.ui.common.VibrationManager.isVibrationOn
+import com.example.applegame.common.BgmManager
+import com.example.applegame.common.SettingsRepository
+import com.example.applegame.common.SoundEffectManager
+import com.example.applegame.common.SoundEffectManager.isSoundOn
+import com.example.applegame.common.VibrationManager
+import com.example.applegame.common.VibrationManager.isVibrationOn
 import com.example.applegame.ui.component.GameSettingsDialog
 import com.example.applegame.ui.navigation.Screen
 
 @Composable
 fun MainScreen( onNavigate: (Screen) -> Unit) {
-    var showSettings by remember { mutableStateOf(false) }
-    var isBgmOn by rememberSaveable { mutableStateOf(true) }
-
     val context = LocalContext.current
 
+    var showSettings by remember { mutableStateOf(false) }
+
+    val initialBgmOn = remember { mutableStateOf(SettingsRepository.isBgmOn) }
+    val initialSoundOn = remember { mutableStateOf(SettingsRepository.isSoundOn) }
+    val initialVibrationOn = remember { mutableStateOf(SettingsRepository.isVibrationOn) }
+
+    var isBgmOn by rememberSaveable { initialBgmOn }
+    var isSoundOn by rememberSaveable { initialSoundOn }
+    var isVibrationOn by rememberSaveable { initialVibrationOn }
+
     LaunchedEffect(Unit) {
-        // 메인화면 진입 시 무조건 처음부터 재생
-        BgmManager.startBgm(context, R.raw.applegame_bgm)
+        SettingsRepository.init(context)
+
+        BgmManager.initializeFromPrefs(context)
+        SoundEffectManager.initializeFromPrefs(context)
+        VibrationManager.initializeFromPrefs(context)
+
+        if (BgmManager.isBgmOn) {
+            BgmManager.startBgm(context, R.raw.applegame_bgm)
+        }
+
+        SoundEffectManager.init(context)
     }
 
     Column(
@@ -241,25 +258,24 @@ fun MainScreen( onNavigate: (Screen) -> Unit) {
             showDialog = showSettings,
             onDismiss = { showSettings = false },
             isBgmOn = isBgmOn,
-            onBgmToggle = { isOn ->
-                isBgmOn = isOn                   // Compose 상태 업데이트
-                BgmManager.isBgmOn = isOn       // 실제 BGM 로직 반영
-
-                if (isOn) {
-                    BgmManager.startBgm(context, R.raw.applegame_bgm)
-                } else {
-                    BgmManager.stopBgm()
-                }
+            onBgmToggle = {
+                isBgmOn = it
+                BgmManager.isBgmOn = it
+                SettingsRepository.isBgmOn = it
+                if (it) BgmManager.startBgm(context, R.raw.applegame_bgm) else BgmManager.stopBgm()
             },
             isSoundOn = isSoundOn,
             onSoundToggle = {
                 isSoundOn = it
                 SoundEffectManager.isSoundOn = it
+                SettingsRepository.isSoundOn = it
             },
             isVibrationOn = isVibrationOn,
+
             onVibrationToggle = {
                 isVibrationOn = it
                 VibrationManager.isVibrationOn = it
+                SettingsRepository.isVibrationOn = it
             },
             // 여기서는 showGoMainButton, showRestartButton 기본값 false 이므로 버튼 표시 X
         )
