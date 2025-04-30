@@ -75,13 +75,9 @@ fun MainScreen( onNavigate: (Screen) -> Unit) {
 
     var showSettings by remember { mutableStateOf(false) }
 
-    val initialBgmOn = remember { mutableStateOf(SettingsRepository.isBgmOn) }
-    val initialSoundOn = remember { mutableStateOf(SettingsRepository.isSoundOn) }
-    val initialVibrationOn = remember { mutableStateOf(SettingsRepository.isVibrationOn) }
-
-    var isBgmOn by rememberSaveable { initialBgmOn }
-    var isSoundOn by rememberSaveable { initialSoundOn }
-    var isVibrationOn by rememberSaveable { initialVibrationOn }
+    var isBgmOn by rememberSaveable { mutableStateOf(SettingsRepository.isBgmOn) }
+    var isSoundOn by rememberSaveable { mutableStateOf(SettingsRepository.isSoundOn) }
+    var isVibrationOn by rememberSaveable { mutableStateOf(SettingsRepository.isVibrationOn) }
 
     LaunchedEffect(Unit) {
         SettingsRepository.init(context)
