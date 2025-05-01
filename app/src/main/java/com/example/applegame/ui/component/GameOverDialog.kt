@@ -16,9 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applegame.R
+import com.example.applegame.ui.screen.jalNanFont
 
 @Composable
 fun GameOverDialog(
@@ -27,6 +32,10 @@ fun GameOverDialog(
     onMainMenu: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val jalnanFont = FontFamily(
+        Font(R.font.jalnan2)
+    )
+
     AlertDialog(
         shape = RoundedCornerShape(24.dp),
         containerColor = Color(0xFFFFF0F0),
@@ -39,7 +48,7 @@ fun GameOverDialog(
                     style = MaterialTheme.typography.headlineSmall.copy(
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
-                        //color = Color(0xFFFF6B6B)
+                        fontFamily = jalNanFont,
                         color = Color(0xFF444444)
                     ),
                     modifier = Modifier.align(Alignment.Center)
@@ -55,6 +64,7 @@ fun GameOverDialog(
                     text = "점수",
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontSize = 12.sp,
+                        fontFamily = jalNanFont,
                         color = Color(0xFF444444)
                     )
                 )
@@ -62,6 +72,7 @@ fun GameOverDialog(
                     text = "$score",
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = 28.sp,
+                        fontFamily = jalNanFont,
                         color = Color(0xFFFF6B6B)
                     ),
                     modifier = Modifier
@@ -82,7 +93,10 @@ fun GameOverDialog(
                     ),
                     modifier = Modifier.padding(end = 8.dp)
                 ) {
-                    Text("다시하기")
+                    Text(
+                        text="다시하기",
+                        style = TextStyle(fontFamily = jalnanFont)
+                    )
                 }
 
                 Button(
@@ -91,7 +105,10 @@ fun GameOverDialog(
                         containerColor = Color(0xFF4CAF50)
                     )
                 ) {
-                    Text("처음으로")
+                    Text(
+                        text="처음으로",
+                        style = TextStyle(fontFamily = jalnanFont)
+                    )
                 }
             }
         },

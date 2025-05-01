@@ -41,6 +41,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,6 +58,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+val jalnanFont = FontFamily(Font(R.font.jalnan2))
 @Composable
 fun RecordScreen(
     onBackToMain: () -> Unit,
@@ -79,7 +83,7 @@ fun RecordScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(vertical = 30.dp, horizontal = 15.dp)
         ) {
             RecordScreenHeader(onBackToMain)
 
@@ -96,16 +100,16 @@ fun RecordScreen(
         if (recordToDelete != null) {
             AlertDialog(
                 onDismissRequest = { viewModel.cancelDeleteRecord() },
-                title = { Text("기록 삭제") },
-                text = { Text("정말 이 기록을 삭제하시겠습니까?") },
+                title = { Text("기록 삭제", fontFamily = jalNanFont) },
+                text = { Text("정말 이 기록을 삭제하시겠습니까?", fontFamily = jalNanFont) },
                 confirmButton = {
                     Button(onClick = { viewModel.confirmDeleteRecord() }) {
-                        Text("삭제")
+                        Text("삭제", fontFamily = jalNanFont)
                     }
                 },
                 dismissButton = {
                     Button(onClick = { viewModel.cancelDeleteRecord() }) {
-                        Text("취소")
+                        Text("취소", fontFamily = jalNanFont)
                     }
                 }
             )
@@ -159,7 +163,7 @@ fun RecordTable(records: List<GameRecord>, viewModel: GameRecordViewModel) {
                         .fillMaxWidth()
                         .padding(horizontal = 40.dp)
                 ) {
-                    Text("더 보기")
+                    Text("더 보기", fontFamily = jalNanFont)
                 }
             }
         }
@@ -174,15 +178,16 @@ fun RecordTableHeader() {
     ) {
         Text(
             text = "",
-            modifier = Modifier.weight(0.9f),
+            modifier = Modifier.weight(0.5f),
             textAlign = TextAlign.Center,
             fontSize = 18.sp,
         )
         Text(
             text = "점수",
-            modifier = Modifier.weight(1.1f),
+            modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
+            fontFamily = jalNanFont,
             fontSize = 18.sp,
             color = Color(0xFF4CAF50)
         )
@@ -191,15 +196,17 @@ fun RecordTableHeader() {
             modifier = Modifier.weight(2f),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
+            fontFamily = jalNanFont,
             fontSize = 18.sp,
             color = Color(0xFF4CAF50)
         )
 
         Text(
             text = "삭제",
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(0.75f),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
+            fontFamily = jalNanFont,
             fontSize = 18.sp,
             color = Color(0xFF4CAF50)
         )
@@ -226,7 +233,7 @@ fun RecordTableRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
-            modifier = Modifier.weight(0.9f)
+            modifier = Modifier.weight(0.5f)
         ) {
             if (isTopRank) {
                 // 1,2,3등이면 메달 표시
@@ -236,11 +243,7 @@ fun RecordTableRow(
                     3 -> R.drawable.apple_bronze_medal
                     else -> R.drawable.green_apple
                 }
-//                Text(
-//                    text = medalEmoji,
-//                    fontSize = 28.sp,
-//                    textAlign = TextAlign.Start
-//                )
+
                 Image(
                     painter = painterResource(id = medalid),
                     contentDescription = "Top Rank Apple Icon",
@@ -262,21 +265,24 @@ fun RecordTableRow(
 
         Text(
             text = "${record.score}점",
-            modifier = Modifier.weight(1.1f),
+            modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
-            fontSize = 15.sp,
+            fontFamily = jalNanFont,
+            fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )
         Text(
             text = formattedDate,
             modifier = Modifier.weight(2f),
             textAlign = TextAlign.Center,
-            fontSize = 13.sp,
+            fontFamily = jalNanFont,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Light,
             color = Color.Gray
         )
 
         Box(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(0.75f)
         ) {
             IconButton(
                 onClick = { onDeleteClick(record) },
@@ -309,6 +315,7 @@ fun EmptyRecordView() {
         Text(
             text = "아직 저장된 기록이 없어요 🍎",
             fontSize = 18.sp,
+            fontFamily = jalNanFont,
             color = Color.Gray
         )
     }

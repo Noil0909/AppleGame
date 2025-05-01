@@ -18,7 +18,7 @@ object BgmManager {
         stopBgm() // 🔁 항상 기존 BGM 중지 후 시작 (중복 방지 및 재시작 목적)
         mediaPlayer = MediaPlayer.create(context, resId).apply {
             isLooping = true
-            setVolume(0.2f, 0.2f)
+            setVolume(0.1f, 0.1f)
             start()
         }
     }

@@ -17,6 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.applegame.R
 import com.example.applegame.ui.viewmodel.AppleGameViewModel
@@ -27,6 +31,10 @@ fun GameInfoHeader(
     viewModel: AppleGameViewModel,
     onShowSettings: () -> Unit
 ) {
+    val jalnanFont = FontFamily(
+        Font(R.font.jalnan2)
+    )
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -44,7 +52,8 @@ fun GameInfoHeader(
         ){
             Text(
                 text = "${viewModel.remainingTime}초",
-                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(fontFamily = jalnanFont),
                 color = Color(0xFF4CAF50)
             )
         }
@@ -57,8 +66,11 @@ fun GameInfoHeader(
             Row(verticalAlignment = Alignment.CenterVertically){
                 Text(
                     text = "${viewModel.score.value}",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color(0xFFFF6B6B),
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = Color(0xFFFF6B6B),
+                        fontFamily = jalnanFont
+                    ),
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
@@ -73,7 +85,8 @@ fun GameInfoHeader(
                 Icon(
                     painter = painterResource(R.drawable.setting_icon),
                     contentDescription = "환경설정",
-                    tint = Color(0xFFFF6B6B)
+                    tint = Color(0xFFFF6B6B),
+                    modifier = Modifier.size(25.dp)
                 )
             }
         }

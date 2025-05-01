@@ -29,6 +29,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalConfiguration
@@ -44,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -57,10 +59,16 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.applegame.R
 import com.example.applegame.data.record.GameRecordDatabase
 import com.example.applegame.data.record.GameRecordRepository
@@ -77,6 +85,10 @@ import com.example.applegame.ui.component.GameOverDialog
 import com.example.applegame.ui.component.GameSettingsDialog
 import com.example.applegame.ui.component.TimeProgressBar
 import com.example.applegame.ui.viewmodel.AppleGameViewModel
+
+val jalNanFont = FontFamily(
+    Font(R.font.jalnan2)
+)
 
 @Composable
 fun AppleGameScreen(
@@ -100,6 +112,27 @@ fun AppleGameScreen(
     var dragEnd by remember { mutableStateOf<Offset?>(null) }
 
     var showSettings by remember { mutableStateOf(false) }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> BgmManager.pauseBgm()
+                Lifecycle.Event.ON_RESUME -> {
+                    if (BgmManager.isBgmOn) {
+                        BgmManager.resumeBgm()
+                    }
+                }
+                Lifecycle.Event.ON_STOP -> BgmManager.pauseBgm()
+                Lifecycle.Event.ON_DESTROY -> BgmManager.stopBgm()
+                else -> {}
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
 
     LaunchedEffect(Unit) {
@@ -236,6 +269,9 @@ fun AppleGameBoard(
     dragStart: Offset?,
     dragEnd: Offset?
 ) {
+    // painterResource는 내부적으로 remember로 활용. 여러번 호출해도 메모리 낭비X
+    val applePainter = painterResource(id = R.drawable.apple2_icon)
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top
@@ -250,42 +286,61 @@ fun AppleGameBoard(
                     val apple = apples[index]
 
                     if (apple.visible) {
-                        Box(
+                        AppleCell(
+                            apple = apple,
+                            index = index,
+                            painter = applePainter,
+                            onUpdateBounds = onUpdateBounds
+                        )
+                    } else {
+                        Spacer(
                             modifier = Modifier
                                 .size(36.dp)
                                 .padding(2.dp)
-                                .onGloballyPositioned { coords ->
-                                    val pos = coords.positionInWindow()
-                                    val size = coords.size.toSize()
-                                    onUpdateBounds(index, Rect(pos, size))
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.apple2_icon),
-                                contentDescription = null,
-                                colorFilter = if(apple.isSelected) tint(Color.Red) else null,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .graphicsLayer {
-                                        scaleX = if (apple.isSelected) 1.1f else 1f
-                                        scaleY = if (apple.isSelected) 1.1f else 1f
-                                    },
-                            )
-                            Text(
-                                text = "${apple.number}",
-                                fontSize = 15.sp,
-                                color = Color.White,
-                                modifier = Modifier
-                                    .offset(y=3.dp)
-                            )
-                        }
-                    } else {
-                        Spacer(modifier = Modifier.size(36.dp).padding(2.dp))
+                        )
                     }
                 }
             }
         }
+    }
+}
+@Composable
+private fun AppleCell(
+    apple: Apple,
+    index: Int,
+    painter: Painter,
+    onUpdateBounds: (Int, Rect) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(36.dp)
+            .padding(2.dp)
+            .onGloballyPositioned { coords ->
+                val pos = coords.positionInWindow()
+                val size = coords.size.toSize()
+                onUpdateBounds(index, Rect(pos, size))
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painter,
+            contentDescription = null,
+            colorFilter = if (apple.isSelected) ColorFilter.tint(Color.Red) else null,
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    scaleX = if (apple.isSelected) 1.1f else 1f
+                    scaleY = if (apple.isSelected) 1.1f else 1f
+                }
+        )
+        Text(
+            text = "${apple.number}",
+            fontSize = 13.sp,
+            color = Color.White,
+            fontWeight = FontWeight.Thin,
+            style = TextStyle(fontFamily = jalNanFont),
+            modifier = Modifier.offset(y = 4.dp)
+        )
     }
 }
 

@@ -45,7 +45,7 @@ object SoundEffectManager {
     fun playPopSound() {
         if (!isSoundOn) return // 꺼져있으면 재생 안함
         popSoundId?.let {
-            soundPool?.play(it, 1f, 1f, 0, 0, 1f)
+            soundPool?.play(it, 0.5f, 0.5f, 0, 0, 1f)
         }
     }
 

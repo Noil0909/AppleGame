@@ -21,11 +21,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.example.applegame.R
 import com.example.applegame.common.SoundEffectManager
 import com.example.applegame.common.SoundEffectManager.isSoundOn
 import com.example.applegame.common.VibrationManager.isVibrationOn
+import com.example.applegame.ui.screen.jalNanFont
 
 @Composable
 fun GameSettingsDialog(
@@ -44,11 +48,19 @@ fun GameSettingsDialog(
     onMainMenu: () -> Unit = {},
     onRestart: () -> Unit = {},
 ) {
+    val jalnanFont = FontFamily(Font(R.font.jalnan2))
+
     if(!showDialog) return
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {Text("게임설정", style = MaterialTheme.typography.titleLarge)},
+        title = {
+            Text(
+                text="게임설정",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontFamily = jalnanFont
+                )
+            )},
         text = {
             Column {
                 SettingRow(icon = R.drawable.bgm_icon, label = "BGM", checked = isBgmOn, onCheckedChange = onBgmToggle)
@@ -70,7 +82,10 @@ fun GameSettingsDialog(
                         ),
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
-                        Text("다시하기")
+                        Text(
+                            text = "다시하기",
+                            style = TextStyle(fontFamily = jalnanFont)
+                        )
                     }
 
                     Button(
@@ -82,7 +97,10 @@ fun GameSettingsDialog(
                             containerColor = Color(0xFF4CAF50)
                         )
                     ) {
-                        Text("처음으로")
+                        Text(
+                            text = "처음으로",
+                            style = TextStyle(fontFamily = jalnanFont)
+                            )
                     }
                 }
             }
@@ -106,7 +124,11 @@ fun SettingRow(icon: Int, label: String, checked: Boolean, onCheckedChange: (Boo
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(text = label, modifier = Modifier.weight(1f))
+        Text(
+            text = label,
+            style = TextStyle(fontFamily = jalNanFont),
+            modifier = Modifier.weight(1f)
+        )
         Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }

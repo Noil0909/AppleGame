@@ -51,6 +51,11 @@ class AppleGameViewModel(
 
     private var timerJob: Job? = null
 
+    override fun onCleared(){
+        super.onCleared()
+        timerJob?.cancel()
+    }
+
     init {
         restartGame()
     }
@@ -154,4 +159,5 @@ class AppleGameViewModel(
             apple.visible && !apple.isSelected && (appleBounds[apple.id]?.overlaps(selectionRect) == true)
         }
     }
+
 }

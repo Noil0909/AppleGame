@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,6 +30,8 @@ import com.example.applegame.R
 fun RecordScreenHeader(
     onNavigateToMain: () -> Unit
 ) {
+    val jalnanFont = FontFamily(Font(R.font.jalnan2))
+
     var isNavigating by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -56,6 +60,7 @@ fun RecordScreenHeader(
             text = "기록보기",
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontSize = 28.sp,
+                fontFamily = jalnanFont,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFFFF6B6B)
             ),

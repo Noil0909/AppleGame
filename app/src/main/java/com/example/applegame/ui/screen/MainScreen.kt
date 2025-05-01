@@ -54,6 +54,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Button
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -79,6 +82,10 @@ fun MainScreen( onNavigate: (Screen) -> Unit) {
     var isSoundOn by rememberSaveable { mutableStateOf(SettingsRepository.isSoundOn) }
     var isVibrationOn by rememberSaveable { mutableStateOf(SettingsRepository.isVibrationOn) }
 
+    val jalnanFont = FontFamily(
+        Font(R.font.jalnan2)
+    )
+
     LaunchedEffect(Unit) {
         SettingsRepository.init(context)
 
@@ -96,7 +103,7 @@ fun MainScreen( onNavigate: (Screen) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFF0F0)), // 연한 분홍 배경
+            .background(Color(0xFFFFF0F0)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(30.dp))
@@ -124,14 +131,16 @@ fun MainScreen( onNavigate: (Screen) -> Unit) {
             Text(
                 text = "사과",
                 color = Color(0xFFFF4444),
-                fontSize = 80.sp,
-                fontWeight = FontWeight.ExtraBold
+                fontSize = 75.sp,
+                fontWeight = FontWeight.ExtraBold,
+                style = TextStyle(fontFamily = jalnanFont)
             )
             Text(
                 text = "게임",
                 color = Color(0xFF4CAF50),
-                fontSize = 80.sp,
-                fontWeight = FontWeight.ExtraBold
+                fontSize = 75.sp,
+                fontWeight = FontWeight.ExtraBold,
+                style = TextStyle(fontFamily = jalnanFont)
             )
 
         }
@@ -168,7 +177,8 @@ fun MainScreen( onNavigate: (Screen) -> Unit) {
                         color = Color.White,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Medium,
-                        modifier = Modifier.offset(y = 5.dp) // 숫자 위치 미세 조정
+                        style = TextStyle(fontFamily = jalnanFont),
+                        modifier = Modifier.offset(y = 7.dp) // 숫자 위치 미세 조정
                     )
                 }
             }
@@ -177,7 +187,7 @@ fun MainScreen( onNavigate: (Screen) -> Unit) {
         Row(
             modifier = Modifier
             .fillMaxSize(),
-            horizontalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom
         ){
             val interactionSourceStartButton = remember { MutableInteractionSource() }
@@ -200,6 +210,7 @@ fun MainScreen( onNavigate: (Screen) -> Unit) {
             Box(
                 contentAlignment = Center,
                 modifier = Modifier
+                    .width(180.dp)
                     .clickable(
                         interactionSource = interactionSourceStartButton,
                         indication = null,
@@ -217,14 +228,16 @@ fun MainScreen( onNavigate: (Screen) -> Unit) {
                 Text(
                     text = "시작하기",
                     color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    style = TextStyle(fontFamily = jalnanFont),
                     modifier = Modifier.offset(y = (-20).dp)
                 )
             }
             Box(
                 contentAlignment = Center,
                 modifier = Modifier
+                    .width(180.dp)
                     .clickable(
                         interactionSource = interactionSourceRecordButton,
                         indication = null,
@@ -242,8 +255,9 @@ fun MainScreen( onNavigate: (Screen) -> Unit) {
                 Text(
                     text = "기록보기",
                     color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    style = TextStyle(fontFamily = jalnanFont),
                     modifier = Modifier.offset(y = (-20).dp)
                 )
             }
