@@ -113,6 +113,8 @@ fun AppleGameScreen(
 
     var showSettings by remember { mutableStateOf(false) }
 
+    var isRotated by rememberSaveable { mutableStateOf(false) }
+
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
@@ -185,7 +187,11 @@ fun AppleGameScreen(
                 .fillMaxSize()
                 .padding(top = 30.dp, bottom = 30.dp)
         ) {
-            GameInfoHeader(viewModel = viewModel, onShowSettings = { showSettings = true })
+            GameInfoHeader(
+                viewModel = viewModel,
+                onShowSettings = { showSettings = true },
+                onRotateToggle = { isRotated = !isRotated }
+            )
             TimeProgressBar(viewModel)
             Spacer(modifier = Modifier.height(30.dp))
 
@@ -196,7 +202,8 @@ fun AppleGameScreen(
                 cols = cols,
                 onUpdateBounds = viewModel::updateBounds,
                 dragStart = dragStart,
-                dragEnd = dragEnd
+                dragEnd = dragEnd,
+                rotateContent = isRotated
             )
 
             DragOverlay(
@@ -266,6 +273,7 @@ fun AppleGameBoard(
     rows: Int,
     cols: Int,
     onUpdateBounds: (Int, Rect) -> Unit,
+    rotateContent: Boolean,
     dragStart: Offset?,
     dragEnd: Offset?
 ) {
@@ -290,7 +298,8 @@ fun AppleGameBoard(
                             apple = apple,
                             index = index,
                             painter = applePainter,
-                            onUpdateBounds = onUpdateBounds
+                            onUpdateBounds = onUpdateBounds,
+                            rotateContent = rotateContent
                         )
                     } else {
                         Spacer(
@@ -309,8 +318,17 @@ private fun AppleCell(
     apple: Apple,
     index: Int,
     painter: Painter,
-    onUpdateBounds: (Int, Rect) -> Unit
+    onUpdateBounds: (Int, Rect) -> Unit,
+    rotateContent: Boolean = false
+
 ) {
+    val rotationAngle = if (rotateContent) 90f else 0f
+    val offsetModifier = if (rotateContent) {
+        Modifier.offset(x = (-4).dp)
+    } else {
+        Modifier.offset(y = 4.dp)
+    }
+
     Box(
         modifier = Modifier
             .size(36.dp)
@@ -331,6 +349,7 @@ private fun AppleCell(
                 .graphicsLayer {
                     scaleX = if (apple.isSelected) 1.1f else 1f
                     scaleY = if (apple.isSelected) 1.1f else 1f
+                    rotationZ = rotationAngle
                 }
         )
         Text(
@@ -339,7 +358,9 @@ private fun AppleCell(
             color = Color.White,
             fontWeight = FontWeight.Thin,
             style = TextStyle(fontFamily = jalNanFont),
-            modifier = Modifier.offset(y = 4.dp)
+            modifier = offsetModifier.graphicsLayer {
+                rotationZ = if (rotateContent) 90f else 0f
+            }
         )
     }
 }

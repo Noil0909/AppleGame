@@ -29,7 +29,8 @@ import com.example.applegame.ui.viewmodel.AppleGameViewModel
 @Composable
 fun GameInfoHeader(
     viewModel: AppleGameViewModel,
-    onShowSettings: () -> Unit
+    onShowSettings: () -> Unit,
+    onRotateToggle: () -> Unit
 ) {
     val jalnanFont = FontFamily(
         Font(R.font.jalnan2)
@@ -80,14 +81,26 @@ fun GameInfoHeader(
         Box(
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.CenterEnd
-        ){
-            IconButton(onClick = onShowSettings){
-                Icon(
-                    painter = painterResource(R.drawable.setting_icon),
-                    contentDescription = "환경설정",
-                    tint = Color(0xFFFF6B6B),
-                    modifier = Modifier.size(25.dp)
-                )
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onRotateToggle) {
+                    Icon(
+                        painter = painterResource(R.drawable.rotation_icon),
+                        contentDescription = "회전",
+                        tint = Color(0xFFFF6B6B),
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
+                IconButton(onClick = onShowSettings) {
+                    Icon(
+                        painter = painterResource(R.drawable.setting_icon),
+                        contentDescription = "환경설정",
+                        tint = Color(0xFFFF6B6B),
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
             }
         }
     }
