@@ -18,11 +18,49 @@ class GameRecordViewModel(
     private val _recordToDelete = MutableStateFlow<GameRecord?>(null)
     val recordToDelete: StateFlow<GameRecord?> = _recordToDelete
 
+    private val _currentPage = MutableStateFlow(1)
+    val currentPage: StateFlow<Int> = _currentPage
+
+    private val _currentPageGroup = MutableStateFlow(0) // 0: 1~5, 1: 6~10
+    val currentPageGroup: StateFlow<Int> = _currentPageGroup
+
+    private val _currentPageRange = MutableStateFlow(1..5)
+    val currentPageRange: StateFlow<IntRange> = _currentPageRange
+
+    private val pageSize = 20
+    val totalPages: Int
+        get() = ((_recordList.value.size - 3).coerceAtLeast(0) + pageSize - 1) / pageSize
+
+
 
     fun loadRecords() {
         viewModelScope.launch {
             val records = repository.getAllRecords()
             _recordList.value = records
+            updatePageRange()
+        }
+    }
+    fun setPage(page: Int) {
+        _currentPage.value = page
+    }
+
+    fun updatePageRange() {
+        val start = _currentPageGroup.value * 5 + 1
+        val end = (start + 4).coerceAtMost(totalPages)
+        _currentPageRange.value = start..end
+    }
+
+    fun goToNextPageGroup() {
+        _currentPageGroup.value += 1
+        updatePageRange()
+        _currentPage.value = _currentPageRange.value.first // 그룹 이동 시 첫 페이지로 이동
+    }
+
+    fun goToPrevPageGroup() {
+        if (_currentPageGroup.value > 0) {
+            _currentPageGroup.value -= 1
+            updatePageRange()
+            _currentPage.value = _currentPageRange.value.first
         }
     }
 
