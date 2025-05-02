@@ -115,32 +115,10 @@ fun AppleGameScreen(
 
     var isRotated by rememberSaveable { mutableStateOf(false) }
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_PAUSE -> BgmManager.pauseBgm()
-                Lifecycle.Event.ON_RESUME -> {
-                    if (BgmManager.isBgmOn) {
-                        BgmManager.resumeBgm()
-                    }
-                }
-                Lifecycle.Event.ON_STOP -> BgmManager.pauseBgm()
-                Lifecycle.Event.ON_DESTROY -> BgmManager.stopBgm()
-                else -> {}
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
-
 
     LaunchedEffect(Unit) {
         SettingsRepository.init(context)
 
-        BgmManager.initializeFromPrefs(context)
         SoundEffectManager.initializeFromPrefs(context)
         VibrationManager.initializeFromPrefs(context)
 

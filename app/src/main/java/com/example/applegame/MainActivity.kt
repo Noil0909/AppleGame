@@ -1,5 +1,6 @@
 package com.example.applegame
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -18,6 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.example.applegame.common.BgmManager
 import com.example.applegame.common.SettingsRepository
 import com.example.applegame.ui.navigation.AppNavigation
@@ -29,14 +33,25 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+
+        // 앱 생명주기 옵저버 등록
+        ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycleObserver(this))
+
+        // 설정 불러오기
         SettingsRepository.init(this)
 
+        BgmManager.initializeFromPrefs(this)
+
+        // 전체화면
         WindowCompat.setDecorFitsSystemWindows(window, false)
         hideSystemBars()
 
         enableEdgeToEdge()
 
-        BgmManager.startBgm(this, R.raw.applegame_bgm)
+        // 최초 앱 시작 시 BGM 시작
+        if (BgmManager.isBgmOn) {
+            BgmManager.startBgm(this, R.raw.applegame_bgm)
+        }
 
         setContent {
             AppleGameTheme {
@@ -57,19 +72,23 @@ class MainActivity : ComponentActivity() {
                         or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 )
     }
+}
 
-    override fun onPause() {
-        super.onPause()
-        BgmManager.pauseBgm()    }
+class AppLifecycleObserver(private val context: Context) : DefaultLifecycleObserver {
 
-    override fun onResume() {
-        super.onResume()
-        BgmManager.resumeBgm()
+    override fun onStart(owner: LifecycleOwner) {
+        // 앱이 포그라운드로 복귀했을 때 BGM 재생
+        if (BgmManager.isBgmOn) {
+            BgmManager.startBgm(context, R.raw.applegame_bgm)
+        }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop(owner: LifecycleOwner) {
+        // 앱이 백그라운드로 전환되면 일시정지
+        BgmManager.pauseBgm()
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
         BgmManager.stopBgm()
     }
 }
-

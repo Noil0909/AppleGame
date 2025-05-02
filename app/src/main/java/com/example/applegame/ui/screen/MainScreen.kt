@@ -89,7 +89,6 @@ fun MainScreen( onNavigate: (Screen) -> Unit) {
     LaunchedEffect(Unit) {
         SettingsRepository.init(context)
 
-        BgmManager.initializeFromPrefs(context)
         SoundEffectManager.initializeFromPrefs(context)
         VibrationManager.initializeFromPrefs(context)
 
