@@ -26,7 +26,6 @@ import com.example.applegame.common.BgmManager
 import com.example.applegame.common.SettingsRepository
 import com.example.applegame.ui.navigation.AppNavigation
 import com.example.applegame.ui.theme.AppleGameTheme
-import dagger.hilt.android.AndroidEntryPoint
 
 class MainActivity : ComponentActivity() {
 

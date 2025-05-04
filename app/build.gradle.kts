@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -10,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.applegame"
-        minSdk = 33
+        minSdk = 24
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -75,17 +76,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
 
-    implementation("com.airbnb.android:lottie-compose:6.6.0")
     implementation("androidx.navigation:navigation-compose:2.8.9")
 
     // viewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
     implementation("com.google.dagger:dagger-compiler:2.50")
-
-    // hilt
-    implementation("androidx.hilt:hilt-navigation-fragment:1.0.0")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     // room DB
     implementation(libs.room.runtime)

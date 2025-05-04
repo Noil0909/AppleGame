@@ -358,7 +358,7 @@ fun EmptyRecordView() {
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "아직 저장된 기록이 없어요 🍎",
+            text = "아직 저장된 기록이 없어요",
             fontSize = 18.sp,
             fontFamily = jalNanFont,
             color = Color.Gray

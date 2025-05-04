@@ -3,12 +3,5 @@
 
     <style name="Theme.AppleGame" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="Theme.AppleGame.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/white</item>
-
-        <item name="android:windowSplashScreenAnimatedIcon">@raw/splash_apple_animation</item>
-        <item name="android:windowSplashScreenAnimationDuration">1000</item>
-        <item name="postSplashScreenTheme">@style/Theme.AppleGame</item>
-    </style>
 
 </resources>
