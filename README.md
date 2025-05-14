@@ -76,5 +76,8 @@
 - 폰트 정보: [https://gccompany.co.kr/font](https://gccompany.co.kr/font)
 - 라이센스 전문 (PDF): [https://image.goodchoice.kr/images/jalnan_font/jalnan-font.pdf](https://image.goodchoice.kr/images/jalnan_font/jalnan-font.pdf)
 
+#### 사과 이미지
+<a href="https://www.flaticon.com/kr/free-icons/" title="과일 아이콘">과일 아이콘 제작자: Sudowoodo - Flaticon</a>
+
 #### 구글플레이 스크린샷 이미지
 [https://previewed.app/template/CFA62417](https://previewed.app/template/CFA62417)
