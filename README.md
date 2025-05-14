@@ -69,3 +69,12 @@
 - 사과 삭제 애니메이션
 - 사과 이미지 캐싱 개선
 - 멀티 플레이
+
+## 출처
+#### 폰트
+- 메인 폰트는 **㈜여기어때컴퍼니**의 **여기어때 잘난체**를 사용했습니다.
+- 폰트 정보: [https://gccompany.co.kr/font](https://gccompany.co.kr/font)
+- 라이센스 전문 (PDF): [https://image.goodchoice.kr/images/jalnan_font/jalnan-font.pdf](https://image.goodchoice.kr/images/jalnan_font/jalnan-font.pdf)
+
+#### 구글플레이 스크린샷 이미지
+[https://previewed.app/template/CFA62417](https://previewed.app/template/CFA62417)
