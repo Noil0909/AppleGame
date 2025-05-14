@@ -4,7 +4,9 @@
 
 숫자가 적힌 사과를 드래그하여 합이 10이 되면 사과가 사라지는 퍼즐 게임입니다.  
 인터넷 방송에서 유행했던 "사과게임"을 Kotlin과 Jetpack Compose로 구현했습니다.
+<hr/>
 
+### 시연 영상 클립
 <table>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/96fd1216-ca53-46fa-8f96-a8b4cd99f7d4" width="200" style="margin-right: 10px;"></td>
@@ -14,6 +16,7 @@
 </table>
 <hr/>
 
+### 앱 주요 화면
 <table>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/58a0ee0e-f9c8-45dc-ab88-e46cbe0b1004" width="200"></td>
