@@ -9,7 +9,7 @@
 
 <table>
   <tr>
-    <td><img src="![KakaoTalk_20250509_224204324_01](https://github.com/user-attachments/assets/58a0ee0e-f9c8-45dc-ab88-e46cbe0b1004)" width="200"></td>
+    <td><img src="https://github.com/user-attachments/assets/58a0ee0e-f9c8-45dc-ab88-e46cbe0b1004" width="200"></td>
     <td><img src="이미지_URL_또는_경로2" width="200"></td>
     <td><img src="이미지_URL_또는_경로3" width="200"></td>
     <!-- 필요한 만큼 <td><img ...></td> 추가 -->
