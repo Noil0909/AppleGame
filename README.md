@@ -81,5 +81,12 @@
 
 <a href="https://www.flaticon.com/kr/free-icons/" title="과일 아이콘">과일 아이콘 제작자: Pixel perfect - Flaticon</a>
 
+#### BGM
+- BGM 정보: "Creative Fun" by Scott Holmes Music, obtained from [Pixabay](https://pixabay.com/music/creative-fun-259223/).
+- 라이선스 요약: https://pixabay.com/ko/service/license-summary/
+
+#### 효과음(SoundEffect)
+효과음 정보: ✔ SFX provided by 셀바이뮤직 https://sellbuymusic.com/md/seaczxk-affxnzt
+
 #### 구글플레이 스크린샷 이미지
 [https://previewed.app/template/CFA62417](https://previewed.app/template/CFA62417)
