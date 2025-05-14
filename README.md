@@ -5,14 +5,14 @@
 숫자가 적힌 사과를 드래그하여 합이 10이 되면 사과가 사라지는 퍼즐 게임입니다.  
 인터넷 방송에서 유행했던 "사과게임"을 Kotlin과 Jetpack Compose로 구현했습니다.
 
-
-
 <table>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/58a0ee0e-f9c8-45dc-ab88-e46cbe0b1004" width="200"></td>
-    <td><img src="이미지_URL_또는_경로2" width="200"></td>
-    <td><img src="이미지_URL_또는_경로3" width="200"></td>
-    <!-- 필요한 만큼 <td><img ...></td> 추가 -->
+    <td><img src="https://github.com/user-attachments/assets/67627df7-d9df-4c7e-881e-18aaf5bfee67" width="200"></td>
+    <td><img src="https://github.com/user-attachments/assets/49763774-9ef2-4916-b843-3195c9b3b3fb" width="200"></td>
+    <td><img src="https://github.com/user-attachments/assets/9414873d-4224-4b65-ba57-c660e506b236" width="200"></td>
+    <td><img src="https://github.com/user-attachments/assets/c20351e3-6348-468b-8dd3-65398ae63cf8" width="200"></td>
+    <td><img src="https://github.com/user-attachments/assets/582c7c78-dacd-4f12-ba9c-8ce8d5383900" width="200"></td>
   </tr>
 </table>
 
