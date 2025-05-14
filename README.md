@@ -79,5 +79,7 @@
 #### 사과 이미지
 <a href="https://www.flaticon.com/kr/free-icons/" title="과일 아이콘">과일 아이콘 제작자: Sudowoodo - Flaticon</a>
 
+<a href="https://www.flaticon.com/kr/free-icons/" title="과일 아이콘">과일 아이콘 제작자: Pixel perfect - Flaticon</a>
+
 #### 구글플레이 스크린샷 이미지
 [https://previewed.app/template/CFA62417](https://previewed.app/template/CFA62417)
