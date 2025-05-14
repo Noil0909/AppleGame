@@ -13,6 +13,7 @@
   </tr>
 </table>
 <hr/>
+
 <table>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/58a0ee0e-f9c8-45dc-ab88-e46cbe0b1004" width="200"></td>
@@ -23,14 +24,14 @@
     <td><img src="https://github.com/user-attachments/assets/582c7c78-dacd-4f12-ba9c-8ce8d5383900" width="200"></td>
   </tr>
 </table>
----
+<hr/>
 
 ## 핵심 기능
 -  **드래그로 사과 선택 및 제거**
 -  **점수 기록 저장, 조회 및 삭제**
+-  **게임 플레이 중 가로/세로 모드 지원**
 -  **BGM, 효과음, 진동 설정 관리**
 -  **페이지네이션이 적용된 기록 조회**
--  **게임 플레이 중 가로/세로 모드 지원**
 
 
 ## 기술 스택
