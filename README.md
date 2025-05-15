@@ -7,6 +7,7 @@
 <hr/>
 
 ## 시연 영상 클립
+<div align="center">
 <table>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/96fd1216-ca53-46fa-8f96-a8b4cd99f7d4" width="200" style="margin-right: 10px;"></td>
@@ -14,7 +15,7 @@
     <td><img src="https://github.com/user-attachments/assets/3ffb24e6-a98b-415d-9f52-1ca365a0b8cf" width="200"></td>
   </tr>
 </table>
-
+</div>
 ## 앱 주요 화면
 <table>
   <tr>
