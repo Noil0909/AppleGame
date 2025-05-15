@@ -16,6 +16,7 @@
   </tr>
 </table>
 </div>
+
 ## 앱 주요 화면
 <table>
   <tr>
